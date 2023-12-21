@@ -2,7 +2,7 @@
 
 public class Booking
 {
-    public Booking(Guid id, Guid roomId, Guid guestId, DateTime checkInDate, DateTime checkOutDate, DateTime bookingDate, float bookingPrice)
+    public Booking(Guid id, Guid roomId, Guid guestId, DateTime checkInDate, DateTime checkOutDate, DateTime bookingDate, float bookingPrice, Review review)
     {
         Id = id;
         RoomId = roomId;
@@ -11,6 +11,7 @@ public class Booking
         CheckOutDate = checkOutDate;
         BookingDate = bookingDate;
         BookingPrice = bookingPrice;
+        Review = review;
     }
 
     public Guid Id { get; private set; }
@@ -20,4 +21,5 @@ public class Booking
     public DateTime CheckOutDate{ get; private set; }
     public DateTime BookingDate { get; private set; }
     public float BookingPrice { get; private set; }
+    public Review? Review { get; private set; }
 }
