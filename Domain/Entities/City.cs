@@ -13,9 +13,9 @@ public class City
     }
     
     public Guid Id { get; private set; }
-    public string Name{ get; private set; }
-    public string CountryName{ get; private set; }
-    public string CountryCode{ get; private set; }
-    public string PostOffice{ get; private set; }
+    public string Name { get; private set; }
+    public string CountryName { get; private set; }
+    public string CountryCode { get; private set; }
+    public string PostOffice { get; private set; }
     public IList<Hotel> Hotels { get; private set; }
 }
