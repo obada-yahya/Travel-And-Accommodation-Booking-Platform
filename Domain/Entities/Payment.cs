@@ -4,9 +4,9 @@ namespace Domain.Entities;
 
 public class Payment
 {
-    public Guid Id { get; private set; }
-    public Guid BookingId { get; private set; }
-    public PaymentMethod Method { get; private set; }
-    public PaymentStatus Status { get; private set; }
-    public double Amount { get; private set; }
+    public Guid Id { get; set; }
+    public Guid BookingId { get; set; }
+    public PaymentMethod Method { get; set; }
+    public PaymentStatus Status { get; set; }
+    public double Amount { get; set; }
 }
