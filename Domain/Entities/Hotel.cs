@@ -12,5 +12,4 @@ public class Hotel
     public string PhoneNumber { get; set; }
     public int FloorsNumber { get; set; }
     public IList<Room> Rooms { get; set; }
-
 }
