@@ -1,8 +1,7 @@
 ﻿namespace Domain.Entities;
 
-public class Room
+public class Room : Entity
 {
-    public Guid Id { get; set; }
     public Guid HotelId { get; set; }
     public Guid RoomTypeId { get; set; }
     public int AdultsCapacity { get; set; }

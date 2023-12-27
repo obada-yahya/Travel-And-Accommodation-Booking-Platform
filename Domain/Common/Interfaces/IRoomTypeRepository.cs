@@ -2,7 +2,7 @@
 
 namespace Domain.Common.Interfaces;
 
-public interface IRoomTypeRepository: IRepository<RoomType>
+public interface IRoomTypeRepository : IRepository<RoomType>
 {
     
 }

@@ -1,10 +1,12 @@
-﻿namespace Domain.Common.Interfaces;
+﻿using Domain.Entities;
 
-public interface IRepository<T> where T : class
+namespace Domain.Common.Interfaces;
+
+public interface IRepository<TEntity> where TEntity : Entity
 {
-    public Task<IEnumerable<T>> GetAllAsync();
-    public Task<T?> GetByIdAsync(int id);
-    T? InsertAsync(T entity);
-    Task UpdateAsync(T entity);
-    Task DeleteAsync(int id);
+    public Task<IEnumerable<TEntity>> GetAllAsync();
+    public Task<TEntity?> GetByIdAsync(Guid id);
+    TEntity? InsertAsync(TEntity entity);
+    Task UpdateAsync(TEntity entity);
+    Task DeleteAsync(Guid id);
 }

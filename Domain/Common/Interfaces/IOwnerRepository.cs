@@ -2,7 +2,7 @@
 
 namespace Domain.Common.Interfaces;
 
-public interface IOwnerRepository: IRepository<Owner>
+public interface IOwnerRepository : IRepository<Owner>
 {
     
 }

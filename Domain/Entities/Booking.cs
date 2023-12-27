@@ -1,8 +1,7 @@
 ﻿namespace Domain.Entities;
 
-public class Booking
+public class Booking : Entity
 {
-    public Guid Id { get; set; }
     public Guid RoomId{ get; set; }
     public Guid GuestId{ get; set; }
     public DateTime CheckInDate{ get;  set; }
