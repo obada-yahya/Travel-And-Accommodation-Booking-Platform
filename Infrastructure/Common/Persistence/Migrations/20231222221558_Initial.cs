@@ -61,7 +61,6 @@ namespace Infrastructure.Common.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    HotelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RoomTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AdultsCapacity = table.Column<int>(type: "int", nullable: false),
                     ChildrenCapacity = table.Column<int>(type: "int", nullable: false),

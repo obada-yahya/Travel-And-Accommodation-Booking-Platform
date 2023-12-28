@@ -47,33 +47,15 @@ namespace Infrastructure.Common.Persistence.Migrations
                 oldType: "int");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomTypes_HotelId",
-                table: "RoomTypes",
-                column: "HotelId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RoomTypes_Type",
                 table: "RoomTypes",
                 column: "Type",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rooms_HotelId",
-                table: "Rooms",
-                column: "HotelId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Rooms_RoomTypeId",
                 table: "Rooms",
                 column: "RoomTypeId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Rooms_Hotels_HotelId",
-                table: "Rooms",
-                column: "HotelId",
-                principalTable: "Hotels",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Rooms_RoomTypes_RoomTypeId",
@@ -95,10 +77,6 @@ namespace Infrastructure.Common.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Rooms_Hotels_HotelId",
-                table: "Rooms");
-
-            migrationBuilder.DropForeignKey(
                 name: "FK_Rooms_RoomTypes_RoomTypeId",
                 table: "Rooms");
 
@@ -113,10 +91,6 @@ namespace Infrastructure.Common.Persistence.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_RoomTypes_Type",
                 table: "RoomTypes");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Rooms_HotelId",
-                table: "Rooms");
 
             migrationBuilder.DropIndex(
                 name: "IX_Rooms_RoomTypeId",

@@ -9,13 +9,6 @@ public class RoomTypeConfiguration: IEntityTypeConfiguration<RoomType>
     public void Configure(EntityTypeBuilder<RoomType> builder)
     {
         builder
-            .HasOne<Hotel>()
-            .WithMany()
-            .IsRequired()
-            .HasForeignKey(roomType => roomType.HotelId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder
             .HasIndex(roomType => roomType.Type)
             .IsUnique();
 

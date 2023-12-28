@@ -242,9 +242,6 @@ namespace Infrastructure.Common.Persistence.Migrations
                     b.Property<int>("ChildrenCapacity")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("HotelId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<float>("Rating")
                         .HasColumnType("real");
 
@@ -264,9 +261,6 @@ namespace Infrastructure.Common.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("HotelId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<float>("PricePerNight")

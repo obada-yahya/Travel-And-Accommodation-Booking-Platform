@@ -244,9 +244,6 @@ namespace Infrastructure.Common.Persistence.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<Guid>("HotelId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<float>("Rating")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("real")
@@ -261,8 +258,6 @@ namespace Infrastructure.Common.Persistence.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("HotelId");
 
                     b.HasIndex("RoomTypeId");
 
@@ -340,12 +335,6 @@ namespace Infrastructure.Common.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Room", b =>
                 {
-                    b.HasOne("Domain.Entities.Hotel", null)
-                        .WithMany()
-                        .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.RoomType", null)
                         .WithMany()
                         .HasForeignKey("RoomTypeId")
