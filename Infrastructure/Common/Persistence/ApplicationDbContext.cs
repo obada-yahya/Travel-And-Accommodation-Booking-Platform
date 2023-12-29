@@ -7,6 +7,11 @@ namespace Infrastructure.Common.Persistence;
 
 public class ApplicationDbContext : DbContext
 {
+    public ApplicationDbContext(DbContextOptions options) : base(options)
+    {
+        // Inject Provider rather than explicitly typing it
+    }
+
     public DbSet<City> Cities { get; set; }
     public DbSet<Owner> Owners { get; set; }
     public DbSet<Hotel> Hotels { get; set; }
@@ -17,12 +22,12 @@ public class ApplicationDbContext : DbContext
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Payment> Payments { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(@"Server=DESKTOP-EKG9OL3\SQLEXPRESS;Database=TravelAndAccommodationBooking;Trusted_Connection=True;TrustServerCertificate=True")
-            .LogTo(Console.WriteLine, new[] {DbLoggerCategory.Database.Command.Name},LogLevel.Information)
-            .EnableSensitiveDataLogging();
-    } 
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     optionsBuilder.UseSqlServer(@"Server=DESKTOP-EKG9OL3\SQLEXPRESS;Database=TravelAndAccommodationBooking;Trusted_Connection=True;TrustServerCertificate=True")
+    //         .LogTo(Console.WriteLine, new[] {DbLoggerCategory.Database.Command.Name},LogLevel.Information)
+    //         .EnableSensitiveDataLogging();
+    // } 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
