@@ -1,8 +1,6 @@
-﻿using Domain.Entities;
+﻿namespace Domain.Common.Interfaces;
 
-namespace Domain.Common.Interfaces;
-
-public interface IRoomTypeRepository : IRepository<RoomType>
+public interface IRoomTypeRepository
 {
     
 }

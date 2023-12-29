@@ -1,8 +1,6 @@
-﻿using Domain.Entities;
+﻿namespace Domain.Common.Interfaces;
 
-namespace Domain.Common.Interfaces;
-
-public interface IOwnerRepository : IRepository<Owner>
+public interface IOwnerRepository
 {
     
 }
