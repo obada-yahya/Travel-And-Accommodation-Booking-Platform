@@ -4,37 +4,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Common.Persistence.Repositories;
 
-public class PaymentRepository : IPaymentRepository
+public class GuestRepository : IGuestRepository
 {
     private readonly ApplicationDbContext _context;
 
-    public PaymentRepository(ApplicationDbContext context)
+    public GuestRepository(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<IEnumerable<Payment>> GetAllAsync()
+    public async Task<IEnumerable<Guest>> GetAllAsync()
     {
         try
         {
             return await _context
-                .Payments
+                .Guests
+                .Include(guest => guest.Bookings)
                 .AsNoTracking()
                 .ToListAsync();
         }
         catch (Exception e)
         {
-            return Enumerable.Empty<Payment>();
+            return Enumerable.Empty<Guest>();
         }
     }
 
-    public async Task<Payment?> GetByIdAsync(Guid paymentId)
+    public async Task<Guest?> GetByIdAsync(Guid guestId)
     {
         try
         {
             return await _context
-                .Payments
-                .SingleAsync(payment => payment.Id == paymentId);
+                .Guests
+                .SingleAsync(guest => guest.Id == guestId);
         }
         catch (Exception e)
         {
@@ -43,13 +44,13 @@ public class PaymentRepository : IPaymentRepository
         return null;
     }
 
-    public async Task<Payment?> InsertAsync(Payment payment)
+    public async Task<Guest?> InsertAsync(Guest guest)
     {
         try
         {
-            await _context.Payments.AddAsync(payment);
+            await _context.Guests.AddAsync(guest);
             await SaveChangesAsync();
-            return payment;
+            return guest;
         }
         catch (DbUpdateException e)
         {
@@ -58,16 +59,16 @@ public class PaymentRepository : IPaymentRepository
         }
     }
 
-    public async Task UpdateAsync(Payment payment)
+    public async Task UpdateAsync(Guest guest)
     {
-        _context.Payments.Update(payment);
+        _context.Guests.Update(guest);
         await SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Guid paymentId)
+    public async Task DeleteAsync(Guid guestId)
     {
-        var paymentToRemove = new Payment { Id = paymentId };
-        _context.Payments.Remove(paymentToRemove);
+        var guestToRemove = new Guest { Id = guestId };
+        _context.Guests.Remove(guestToRemove);
         await SaveChangesAsync();
     }
 
@@ -76,11 +77,11 @@ public class PaymentRepository : IPaymentRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> IsExistsAsync(Guid paymentId)
+    public async Task<bool> IsExistsAsync(Guid guestId)
     {
         return await _context
             .Payments
             .AnyAsync
-            (payment => payment.Id.Equals(paymentId));
+            (guest => guest.Id.Equals(guestId));
     }
 }
