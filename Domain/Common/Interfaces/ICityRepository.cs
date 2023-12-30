@@ -10,5 +10,5 @@ public interface ICityRepository
     Task UpdateAsync(City city);
     Task DeleteAsync(Guid cityId);
     Task SaveChangesAsync();
-    
+    Task<bool> IsExistsAsync(Guid cityId);
 }
