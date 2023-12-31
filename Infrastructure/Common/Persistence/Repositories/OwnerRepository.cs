@@ -35,7 +35,7 @@ public class OwnerRepository : IOwnerRepository
         {
             return await _context
                 .Owners
-                .SingleAsync(owner => owner.Id == ownerId);
+                .SingleAsync(owner => owner.Id.Equals(ownerId));
         }
         catch (Exception e)
         {

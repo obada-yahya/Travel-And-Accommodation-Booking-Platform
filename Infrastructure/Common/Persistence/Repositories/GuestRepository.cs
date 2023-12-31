@@ -35,7 +35,7 @@ public class GuestRepository : IGuestRepository
         {
             return await _context
                 .Guests
-                .SingleAsync(guest => guest.Id == guestId);
+                .SingleAsync(guest => guest.Id.Equals(guestId));
         }
         catch (Exception e)
         {

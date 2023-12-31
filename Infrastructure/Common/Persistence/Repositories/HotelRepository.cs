@@ -34,7 +34,7 @@ public class HotelRepository: IHotelRepository
         {
             return await _context
                 .Hotels
-                .SingleAsync(hotel => hotel.Id == hotelId);
+                .SingleAsync(hotel => hotel.Id.Equals(hotelId));
         }
         catch (Exception e)
         {

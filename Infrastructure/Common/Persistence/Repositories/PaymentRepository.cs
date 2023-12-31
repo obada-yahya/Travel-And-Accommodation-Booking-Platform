@@ -34,7 +34,7 @@ public class PaymentRepository : IPaymentRepository
         {
             return await _context
                 .Payments
-                .SingleAsync(payment => payment.Id == paymentId);
+                .SingleAsync(payment => payment.Id.Equals(paymentId));
         }
         catch (Exception e)
         {

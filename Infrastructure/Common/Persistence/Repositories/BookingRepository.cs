@@ -36,7 +36,7 @@ public class BookingRepository : IBookingRepository
         {
             return await _context
                 .Bookings
-                .SingleAsync(booking => booking.Id == bookingId);
+                .SingleAsync(booking => booking.Id.Equals(bookingId));
         }
         catch (Exception e)
         {
@@ -68,7 +68,7 @@ public class BookingRepository : IBookingRepository
 
     public async Task DeleteAsync(Guid bookingId)
     {
-        var bookingToRemove = new Booking() { Id = bookingId };
+        var bookingToRemove = new Booking { Id = bookingId };
         _context.Bookings.Remove(bookingToRemove);
         await SaveChangesAsync();
     }
