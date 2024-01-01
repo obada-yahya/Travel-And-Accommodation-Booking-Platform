@@ -4,38 +4,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Common.Persistence.Repositories;
 
-public class CityRepository : ICityRepository
+public class OwnerRepository : IOwnerRepository
 {
     private readonly ApplicationDbContext _context;
 
-    public CityRepository(ApplicationDbContext context)
+    public OwnerRepository(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<IReadOnlyList<City>> GetAllAsync()
+    public async Task<IReadOnlyList<Owner>> GetAllAsync()
     {
         try
         {
             return await _context
-                .Cities
-                .Include(city => city.Hotels)
+                .Owners
+                .Include(owner => owner.Hotels)
                 .AsNoTracking()
                 .ToListAsync();
         }
         catch (Exception)
         {
-            return Array.Empty<City>();
+            return Array.Empty<Owner>();
         }
     }
 
-    public async Task<City?> GetByIdAsync(Guid cityId)
+    public async Task<Owner?> GetByIdAsync(Guid ownerId)
     {
         try
         {
             return await _context
-                .Cities
-                .SingleAsync(city => city.Id.Equals(cityId));
+                .Owners
+                .SingleAsync(owner => owner.Id.Equals(ownerId));
         }
         catch (Exception e)
         {
@@ -44,13 +44,13 @@ public class CityRepository : ICityRepository
         return null;
     }
 
-    public async Task<City?> InsertAsync(City city)
+    public async Task<Owner?> InsertAsync(Owner owner)
     {
         try
         {
-            await _context.Cities.AddAsync(city);
+            await _context.Owners.AddAsync(owner);
             await SaveChangesAsync();
-            return city;
+            return owner;
         }
         catch (DbUpdateException e)
         {
@@ -59,16 +59,16 @@ public class CityRepository : ICityRepository
         }
     }
 
-    public async Task UpdateAsync(City city)
+    public async Task UpdateAsync(Owner owner)
     {
-        _context.Cities.Update(city);
+        _context.Owners.Update(owner);
         await SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Guid cityId)
+    public async Task DeleteAsync(Guid ownerId)
     {
-        var cityToRemove = new City { Id = cityId };
-        _context.Cities.Remove(cityToRemove);
+        var ownerToRemove = new Owner { Id = ownerId };
+        _context.Owners.Remove(ownerToRemove);
         await SaveChangesAsync();
     }
 
@@ -77,11 +77,11 @@ public class CityRepository : ICityRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> IsExistsAsync(Guid cityId)
+    public async Task<bool> IsExistsAsync(Guid ownerId)
     {
         return await _context
-            .Cities
+            .Owners
             .AnyAsync
-            (city => city.Id.Equals(cityId));
+            (owner => owner.Id.Equals(ownerId));
     }
 }

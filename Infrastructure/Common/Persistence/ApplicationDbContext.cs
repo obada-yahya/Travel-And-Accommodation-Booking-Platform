@@ -1,15 +1,14 @@
 ﻿using System.Reflection;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Common.Persistence;
 
 public class ApplicationDbContext : DbContext
 {
-    public ApplicationDbContext(DbContextOptions options) : base(options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
-        // Inject Provider rather than explicitly typing it
+        
     }
 
     public DbSet<City> Cities { get; set; }
@@ -22,12 +21,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Payment> Payments { get; set; }
 
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     optionsBuilder.UseSqlServer(@"Server=DESKTOP-EKG9OL3\SQLEXPRESS;Database=TravelAndAccommodationBooking;Trusted_Connection=True;TrustServerCertificate=True")
-    //         .LogTo(Console.WriteLine, new[] {DbLoggerCategory.Database.Command.Name},LogLevel.Information)
-    //         .EnableSensitiveDataLogging();
-    // } 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

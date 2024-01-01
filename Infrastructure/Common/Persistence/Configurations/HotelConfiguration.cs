@@ -31,7 +31,7 @@ public class HotelConfiguration : IEntityTypeConfiguration<Hotel>
         builder
             .Property(hotel => hotel.PhoneNumber)
             .IsRequired()
-            .HasMaxLength(15);
+            .HasMaxLength(20);
 
         builder
             .Property(hotel => hotel.FloorsNumber)

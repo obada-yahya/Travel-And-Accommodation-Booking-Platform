@@ -4,38 +4,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Common.Persistence.Repositories;
 
-public class CityRepository : ICityRepository
+public class GuestRepository : IGuestRepository
 {
     private readonly ApplicationDbContext _context;
 
-    public CityRepository(ApplicationDbContext context)
+    public GuestRepository(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<IReadOnlyList<City>> GetAllAsync()
+    public async Task<IReadOnlyList<Guest>> GetAllAsync()
     {
         try
         {
             return await _context
-                .Cities
-                .Include(city => city.Hotels)
+                .Guests
+                .Include(guest => guest.Bookings)
                 .AsNoTracking()
                 .ToListAsync();
         }
         catch (Exception)
         {
-            return Array.Empty<City>();
+            return Array.Empty<Guest>();
         }
     }
 
-    public async Task<City?> GetByIdAsync(Guid cityId)
+    public async Task<Guest?> GetByIdAsync(Guid guestId)
     {
         try
         {
             return await _context
-                .Cities
-                .SingleAsync(city => city.Id.Equals(cityId));
+                .Guests
+                .SingleAsync(guest => guest.Id.Equals(guestId));
         }
         catch (Exception e)
         {
@@ -44,13 +44,13 @@ public class CityRepository : ICityRepository
         return null;
     }
 
-    public async Task<City?> InsertAsync(City city)
+    public async Task<Guest?> InsertAsync(Guest guest)
     {
         try
         {
-            await _context.Cities.AddAsync(city);
+            await _context.Guests.AddAsync(guest);
             await SaveChangesAsync();
-            return city;
+            return guest;
         }
         catch (DbUpdateException e)
         {
@@ -59,16 +59,16 @@ public class CityRepository : ICityRepository
         }
     }
 
-    public async Task UpdateAsync(City city)
+    public async Task UpdateAsync(Guest guest)
     {
-        _context.Cities.Update(city);
+        _context.Guests.Update(guest);
         await SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Guid cityId)
+    public async Task DeleteAsync(Guid guestId)
     {
-        var cityToRemove = new City { Id = cityId };
-        _context.Cities.Remove(cityToRemove);
+        var guestToRemove = new Guest { Id = guestId };
+        _context.Guests.Remove(guestToRemove);
         await SaveChangesAsync();
     }
 
@@ -77,11 +77,11 @@ public class CityRepository : ICityRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> IsExistsAsync(Guid cityId)
+    public async Task<bool> IsExistsAsync(Guid guestId)
     {
         return await _context
-            .Cities
+            .Payments
             .AnyAsync
-            (city => city.Id.Equals(cityId));
+            (guest => guest.Id.Equals(guestId));
     }
 }

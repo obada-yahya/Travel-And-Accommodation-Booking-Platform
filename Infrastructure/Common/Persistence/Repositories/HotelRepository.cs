@@ -13,21 +13,28 @@ public class HotelRepository: IHotelRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Hotel>> GetAllAsync()
-    {
-        return await _context
-            .Hotels
-            .AsNoTracking()
-            .ToListAsync();
-    }
-
-    public async Task<Hotel?> GetByIdAsync(Guid id)
+    public async Task<IReadOnlyList<Hotel>> GetAllAsync()
     {
         try
         {
             return await _context
                 .Hotels
-                .SingleAsync(hotel => hotel.Id == id);
+                .AsNoTracking()
+                .ToListAsync();
+        }
+        catch (Exception)
+        {
+            return Array.Empty<Hotel>();
+        }
+    }
+
+    public async Task<Hotel?> GetByIdAsync(Guid hotelId)
+    {
+        try
+        {
+            return await _context
+                .Hotels
+                .SingleAsync(hotel => hotel.Id.Equals(hotelId));
         }
         catch (Exception e)
         {
@@ -67,5 +74,13 @@ public class HotelRepository: IHotelRepository
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> IsExistsAsync(Guid hotelId)
+    {
+        return await _context
+            .Hotels
+            .AnyAsync
+            (hotel => hotel.Id.Equals(hotelId));
     }
 }

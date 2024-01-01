@@ -4,38 +4,37 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Common.Persistence.Repositories;
 
-public class CityRepository : ICityRepository
+public class PaymentRepository : IPaymentRepository
 {
     private readonly ApplicationDbContext _context;
 
-    public CityRepository(ApplicationDbContext context)
+    public PaymentRepository(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<IReadOnlyList<City>> GetAllAsync()
+    public async Task<IReadOnlyList<Payment>> GetAllAsync()
     {
         try
         {
             return await _context
-                .Cities
-                .Include(city => city.Hotels)
+                .Payments
                 .AsNoTracking()
                 .ToListAsync();
         }
         catch (Exception)
         {
-            return Array.Empty<City>();
+            return Array.Empty<Payment>();
         }
     }
 
-    public async Task<City?> GetByIdAsync(Guid cityId)
+    public async Task<Payment?> GetByIdAsync(Guid paymentId)
     {
         try
         {
             return await _context
-                .Cities
-                .SingleAsync(city => city.Id.Equals(cityId));
+                .Payments
+                .SingleAsync(payment => payment.Id.Equals(paymentId));
         }
         catch (Exception e)
         {
@@ -44,13 +43,13 @@ public class CityRepository : ICityRepository
         return null;
     }
 
-    public async Task<City?> InsertAsync(City city)
+    public async Task<Payment?> InsertAsync(Payment payment)
     {
         try
         {
-            await _context.Cities.AddAsync(city);
+            await _context.Payments.AddAsync(payment);
             await SaveChangesAsync();
-            return city;
+            return payment;
         }
         catch (DbUpdateException e)
         {
@@ -59,16 +58,16 @@ public class CityRepository : ICityRepository
         }
     }
 
-    public async Task UpdateAsync(City city)
+    public async Task UpdateAsync(Payment payment)
     {
-        _context.Cities.Update(city);
+        _context.Payments.Update(payment);
         await SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Guid cityId)
+    public async Task DeleteAsync(Guid paymentId)
     {
-        var cityToRemove = new City { Id = cityId };
-        _context.Cities.Remove(cityToRemove);
+        var paymentToRemove = new Payment { Id = paymentId };
+        _context.Payments.Remove(paymentToRemove);
         await SaveChangesAsync();
     }
 
@@ -77,11 +76,11 @@ public class CityRepository : ICityRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> IsExistsAsync(Guid cityId)
+    public async Task<bool> IsExistsAsync(Guid paymentId)
     {
         return await _context
-            .Cities
+            .Payments
             .AnyAsync
-            (city => city.Id.Equals(cityId));
+            (payment => payment.Id.Equals(paymentId));
     }
 }
