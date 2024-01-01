@@ -26,6 +26,6 @@ public class GuestConfiguration: IEntityTypeConfiguration<Guest>
         builder
             .Property(guest => guest.PhoneNumber)
             .IsRequired()
-            .HasMaxLength(15);
+            .HasMaxLength(20);
     }
 }

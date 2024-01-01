@@ -26,6 +26,6 @@ public class OwnerConfiguration : IEntityTypeConfiguration<Owner>
         builder
             .Property(owner => owner.PhoneNumber)
             .IsRequired()
-            .HasMaxLength(15);
+            .HasMaxLength(20);
     }
 }
