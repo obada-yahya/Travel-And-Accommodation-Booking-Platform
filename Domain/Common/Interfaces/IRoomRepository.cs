@@ -4,7 +4,7 @@ namespace Domain.Common.Interfaces;
 
 public interface IRoomRepository
 {
-    public Task<IEnumerable<Room>> GetAllAsync();
+    public Task<IReadOnlyList<Room>> GetAllAsync();
     public Task<Room?> GetByIdAsync(Guid roomId);
     Task<Room?> InsertAsync(Room room);
     Task UpdateAsync(Room room);

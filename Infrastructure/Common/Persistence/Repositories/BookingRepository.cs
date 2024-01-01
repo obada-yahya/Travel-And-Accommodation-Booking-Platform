@@ -13,7 +13,7 @@ public class BookingRepository : IBookingRepository
         _context = context;
     }
     
-    public async Task<IEnumerable<Booking>> GetAllAsync()
+    public async Task<IReadOnlyList<Booking>> GetAllAsync()
     {
         try
         {
@@ -26,7 +26,7 @@ public class BookingRepository : IBookingRepository
         }
         catch (Exception e)
         {
-            return Enumerable.Empty<Booking>();
+            return Array.Empty<Booking>();
         }
     }
 

@@ -13,7 +13,7 @@ public class CityRepository : ICityRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<City>> GetAllAsync()
+    public async Task<IReadOnlyList<City>> GetAllAsync()
     {
         try
         {
@@ -25,7 +25,7 @@ public class CityRepository : ICityRepository
         }
         catch (Exception e)
         {
-            return Enumerable.Empty<City>();
+            return Array.Empty<City>();
         }
     }
 

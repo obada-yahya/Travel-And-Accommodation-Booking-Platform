@@ -4,7 +4,7 @@ namespace Domain.Common.Interfaces;
 
 public interface IPaymentRepository 
 {
-    public Task<IEnumerable<Payment>> GetAllAsync();
+    public Task<IReadOnlyList<Payment>> GetAllAsync();
     public Task<Payment?> GetByIdAsync(Guid paymentId);
     Task<Payment?> InsertAsync(Payment payment);
     Task UpdateAsync(Payment payment);

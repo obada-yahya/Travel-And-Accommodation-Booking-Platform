@@ -4,7 +4,7 @@ namespace Domain.Common.Interfaces;
 
 public interface IBookingRepository
 {
-    public Task<IEnumerable<Booking>> GetAllAsync();
+    public Task<IReadOnlyList<Booking>>  GetAllAsync();
     public Task<Booking?> GetByIdAsync(Guid bookingId);
     Task<Booking?> InsertAsync(Booking booking);
     Task UpdateAsync(Booking booking);

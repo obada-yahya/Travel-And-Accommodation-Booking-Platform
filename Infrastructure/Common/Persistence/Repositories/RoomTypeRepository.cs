@@ -13,7 +13,7 @@ public class RoomTypeRepository : IRoomTypeRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<RoomType>> GetAllAsync()
+    public async Task<IReadOnlyList<RoomType>> GetAllAsync()
     {
         try
         {
@@ -24,7 +24,7 @@ public class RoomTypeRepository : IRoomTypeRepository
         }
         catch (Exception e)
         {
-            return Enumerable.Empty<RoomType>();
+            return Array.Empty<RoomType>();
         }
     }
 

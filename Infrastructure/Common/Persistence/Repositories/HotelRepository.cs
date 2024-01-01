@@ -13,7 +13,7 @@ public class HotelRepository: IHotelRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Hotel>> GetAllAsync()
+    public async Task<IReadOnlyList<Hotel>> GetAllAsync()
     {
         try
         {
@@ -24,7 +24,7 @@ public class HotelRepository: IHotelRepository
         }
         catch (Exception e)
         {
-            return Enumerable.Empty<Hotel>();
+            return Array.Empty<Hotel>();
         }
     }
 

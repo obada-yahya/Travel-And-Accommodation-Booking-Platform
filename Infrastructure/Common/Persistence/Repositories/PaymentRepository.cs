@@ -13,7 +13,7 @@ public class PaymentRepository : IPaymentRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Payment>> GetAllAsync()
+    public async Task<IReadOnlyList<Payment>> GetAllAsync()
     {
         try
         {
@@ -24,7 +24,7 @@ public class PaymentRepository : IPaymentRepository
         }
         catch (Exception e)
         {
-            return Enumerable.Empty<Payment>();
+            return Array.Empty<Payment>();
         }
     }
 

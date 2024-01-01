@@ -4,7 +4,7 @@ namespace Domain.Common.Interfaces;
 
 public interface IGuestRepository
 {
-    public Task<IEnumerable<Guest>> GetAllAsync();
+    public Task<IReadOnlyList<Guest>> GetAllAsync();
     public Task<Guest?> GetByIdAsync(Guid guestId);
     Task<Guest?> InsertAsync(Guest guest);
     Task UpdateAsync(Guest guest);

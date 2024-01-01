@@ -13,7 +13,7 @@ public class OwnerRepository : IOwnerRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Owner>> GetAllAsync()
+    public async Task<IReadOnlyList<Owner>> GetAllAsync()
     {
         try
         {
@@ -25,7 +25,7 @@ public class OwnerRepository : IOwnerRepository
         }
         catch (Exception e)
         {
-            return Enumerable.Empty<Owner>();
+            return Array.Empty<Owner>();
         }
     }
 

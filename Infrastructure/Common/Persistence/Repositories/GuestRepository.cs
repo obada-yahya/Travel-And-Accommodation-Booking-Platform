@@ -13,7 +13,7 @@ public class GuestRepository : IGuestRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Guest>> GetAllAsync()
+    public async Task<IReadOnlyList<Guest>> GetAllAsync()
     {
         try
         {
@@ -25,7 +25,7 @@ public class GuestRepository : IGuestRepository
         }
         catch (Exception e)
         {
-            return Enumerable.Empty<Guest>();
+            return Array.Empty<Guest>();
         }
     }
 

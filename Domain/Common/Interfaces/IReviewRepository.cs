@@ -4,7 +4,7 @@ namespace Domain.Common.Interfaces;
 
 public interface IReviewRepository
 {
-    public Task<IEnumerable<Review>> GetAllAsync();
+    public Task<IReadOnlyList<Review>> GetAllAsync();
     public Task<Review?> GetByIdAsync(Guid reviewId);
     Task<Review?> InsertAsync(Review review);
     Task UpdateAsync(Review review);

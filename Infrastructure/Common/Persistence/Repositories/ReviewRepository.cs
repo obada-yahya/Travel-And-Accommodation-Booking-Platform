@@ -13,7 +13,7 @@ public class ReviewRepository : IReviewRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Review>> GetAllAsync()
+    public async Task<IReadOnlyList<Review>> GetAllAsync()
     {
         try
         {
@@ -24,7 +24,7 @@ public class ReviewRepository : IReviewRepository
         }
         catch (Exception e)
         {
-            return Enumerable.Empty<Review>();
+            return Array.Empty<Review>();
         }
     }
 

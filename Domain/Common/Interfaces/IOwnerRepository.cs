@@ -4,7 +4,7 @@ namespace Domain.Common.Interfaces;
 
 public interface IOwnerRepository
 {
-    public Task<IEnumerable<Owner>> GetAllAsync();
+    public Task<IReadOnlyList<Owner>> GetAllAsync();
     public Task<Owner?> GetByIdAsync(Guid ownerId);
     Task<Owner?> InsertAsync(Owner owner);
     Task UpdateAsync(Owner owner);
