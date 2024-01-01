@@ -23,7 +23,7 @@ public class OwnerRepository : IOwnerRepository
                 .AsNoTracking()
                 .ToListAsync();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return Array.Empty<Owner>();
         }

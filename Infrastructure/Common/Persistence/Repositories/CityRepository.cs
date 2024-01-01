@@ -23,7 +23,7 @@ public class CityRepository : ICityRepository
                 .AsNoTracking()
                 .ToListAsync();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return Array.Empty<City>();
         }

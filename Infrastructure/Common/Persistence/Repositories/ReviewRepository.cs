@@ -22,7 +22,7 @@ public class ReviewRepository : IReviewRepository
                 .AsNoTracking()
                 .ToListAsync();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return Array.Empty<Review>();
         }

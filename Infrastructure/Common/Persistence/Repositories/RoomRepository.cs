@@ -22,7 +22,7 @@ public class RoomRepository : IRoomRepository
                 .AsNoTracking()
                 .ToListAsync();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return Array.Empty<Room>();
         }

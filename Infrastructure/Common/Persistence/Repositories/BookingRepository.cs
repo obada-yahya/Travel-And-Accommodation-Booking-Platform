@@ -24,7 +24,7 @@ public class BookingRepository : IBookingRepository
                 .AsNoTracking()
                 .ToListAsync();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return Array.Empty<Booking>();
         }

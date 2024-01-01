@@ -22,7 +22,7 @@ public class PaymentRepository : IPaymentRepository
                 .AsNoTracking()
                 .ToListAsync();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return Array.Empty<Payment>();
         }

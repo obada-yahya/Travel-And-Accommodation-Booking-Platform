@@ -22,7 +22,7 @@ public class HotelRepository: IHotelRepository
                 .AsNoTracking()
                 .ToListAsync();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return Array.Empty<Hotel>();
         }
