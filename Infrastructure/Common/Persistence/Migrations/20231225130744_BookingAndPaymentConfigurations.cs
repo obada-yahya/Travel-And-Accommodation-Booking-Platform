@@ -39,13 +39,13 @@ namespace Infrastructure.Common.Persistence.Migrations
                 name: "IX_Payments_Method",
                 table: "Payments",
                 column: "Method",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_Status",
                 table: "Payments",
                 column: "Status",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_RoomId",

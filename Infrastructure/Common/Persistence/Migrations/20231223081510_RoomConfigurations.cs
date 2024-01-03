@@ -50,7 +50,7 @@ namespace Infrastructure.Common.Persistence.Migrations
                 name: "IX_RoomTypes_Type",
                 table: "RoomTypes",
                 column: "Type",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rooms_RoomTypeId",
