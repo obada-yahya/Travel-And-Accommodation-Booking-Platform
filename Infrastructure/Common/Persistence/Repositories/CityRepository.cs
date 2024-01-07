@@ -1,5 +1,7 @@
-﻿using Domain.Common.Interfaces;
+﻿using Domain.Common;
+using Domain.Common.Interfaces;
 using Domain.Entities;
+using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Common.Persistence.Repositories;
@@ -13,29 +15,50 @@ public class CityRepository : ICityRepository
         _context = context;
     }
 
-    public async Task<IReadOnlyList<City>> GetAllAsync()
+    public async Task<(IReadOnlyList<City>, PaginationMetaData)> GetAllAsync(bool includeHotels, int pageNumber, int pageSize)
     {
         try
         {
-            return await _context
-                .Cities
-                .Include(city => city.Hotels)
+            var query = _context.Cities.AsQueryable();
+            var totalItemCount = await query.CountAsync();
+            var paginationMetaData = new PaginationMetaData(totalItemCount, pageSize, pageNumber);
+            
+            if (includeHotels)
+            {
+                query = query.Include(city => city.Hotels);
+            }
+
+            var result = query
+                .Skip(pageSize * (pageNumber - 1))
+                .Take(pageSize)
                 .AsNoTracking()
-                .ToListAsync();
+                .ToList();
+            
+            return (result, paginationMetaData);
         }
         catch (Exception)
         {
-            return Array.Empty<City>();
+            return (Array.Empty<City>(), new PaginationMetaData(0,0,0));
         }
     }
 
-    public async Task<City?> GetByIdAsync(Guid cityId)
+    public async Task<City?> GetByIdAsync(Guid cityId, bool includeHotels)
     {
         try
         {
-            return await _context
+            var query = _context
                 .Cities
-                .SingleAsync(city => city.Id.Equals(cityId));
+                .AsQueryable();
+
+            if (includeHotels)
+            {
+                query = query.Include(city => city.Hotels);
+            }
+
+            return await query
+                .AsNoTracking()
+                .SingleAsync
+                (city => city.Id.Equals(cityId));
         }
         catch (Exception e)
         {
@@ -61,8 +84,21 @@ public class CityRepository : ICityRepository
 
     public async Task UpdateAsync(City city)
     {
-        _context.Cities.Update(city);
-        await SaveChangesAsync();
+        try
+        {
+            _context.Cities.Update(city);
+            await SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            throw new DataConstraintViolationException("Error updating the city. Check for a violation of city attributes.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.InnerException);
+            throw new InvalidOperationException("Error Occured while updating city.");
+        }
     }
 
     public async Task DeleteAsync(Guid cityId)
