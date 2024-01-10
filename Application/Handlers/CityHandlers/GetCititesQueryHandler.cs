@@ -1,13 +1,13 @@
 ﻿using Application.DTOs.CityDtos;
 using Application.Queries.CityQueries;
 using AutoMapper;
-using Domain.Common;
 using Domain.Common.Interfaces;
+using Domain.Common.Models;
 using MediatR;
 
 namespace Application.Handlers.CityHandlers;
 
-public class GetCitiesQueryHandler : IRequestHandler<GetCitiesQuery, (IReadOnlyList<CityDto>, PaginationMetaData)>
+public class GetCitiesQueryHandler : IRequestHandler<GetCitiesQuery, PaginatedList<CityDto>>
 {
     private readonly ICityRepository _cityRepository;
     private readonly IMapper _mapper;
@@ -18,11 +18,17 @@ public class GetCitiesQueryHandler : IRequestHandler<GetCitiesQuery, (IReadOnlyL
         _mapper = mapper;
     }
 
-    public async Task<(IReadOnlyList<CityDto>, PaginationMetaData)> Handle(GetCitiesQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedList<CityDto>> Handle(GetCitiesQuery request, CancellationToken cancellationToken)
     {
-        var (cities, paginationMetaData) = await 
+        var paginatedList = await 
             _cityRepository
-            .GetAllAsync(request.IncludeHotels,request.PageNumber,request.PageSize);
-        return (_mapper.Map<IReadOnlyList<CityDto>>(cities), paginationMetaData);
+            .GetAllAsync(
+            request.IncludeHotels,
+            request.PageNumber,
+            request.PageSize);
+
+        return new PaginatedList<CityDto>(
+        _mapper.Map<List<CityDto>>(paginatedList.Items),
+             paginatedList.PageData);
     }
 }

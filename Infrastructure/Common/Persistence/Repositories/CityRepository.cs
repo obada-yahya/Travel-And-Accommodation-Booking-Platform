@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Common.Interfaces;
+using Domain.Common.Models;
 using Domain.Entities;
 using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -15,13 +16,13 @@ public class CityRepository : ICityRepository
         _context = context;
     }
 
-    public async Task<(IReadOnlyList<City>, PaginationMetaData)> GetAllAsync(bool includeHotels, int pageNumber, int pageSize)
+    public async Task<PaginatedList<City>> GetAllAsync(bool includeHotels, int pageNumber, int pageSize)
     {
         try
         {
             var query = _context.Cities.AsQueryable();
             var totalItemCount = await query.CountAsync();
-            var paginationMetaData = new PaginationMetaData(totalItemCount, pageSize, pageNumber);
+            var pageData = new PageData(totalItemCount, pageSize, pageNumber);
             
             if (includeHotels)
             {
@@ -33,12 +34,12 @@ public class CityRepository : ICityRepository
                 .Take(pageSize)
                 .AsNoTracking()
                 .ToList();
-            
-            return (result, paginationMetaData);
+
+            return new PaginatedList<City>(result, pageData);
         }
         catch (Exception)
         {
-            return (Array.Empty<City>(), new PaginationMetaData(0,0,0));
+            return new PaginatedList<City>(new List<City>(), new PageData(0, 0, 0));
         }
     }
 
@@ -96,7 +97,6 @@ public class CityRepository : ICityRepository
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
-            Console.WriteLine(e.InnerException);
             throw new InvalidOperationException("Error Occured while updating city.");
         }
     }
