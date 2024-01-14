@@ -4,16 +4,19 @@ using Domain.Common.Models;
 using Domain.Entities;
 using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Common.Persistence.Repositories;
 
 public class CityRepository : ICityRepository
 {
     private readonly ApplicationDbContext _context;
+    private readonly ILogger _logger;
 
-    public CityRepository(ApplicationDbContext context)
+    public CityRepository(ApplicationDbContext context, ILogger logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<PaginatedList<City>> GetAllAsync(bool includeHotels, int pageNumber, int pageSize)
@@ -63,7 +66,7 @@ public class CityRepository : ICityRepository
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            _logger.LogError(e.Message);
         }
         return null;
     }
@@ -78,7 +81,7 @@ public class CityRepository : ICityRepository
         }
         catch (DbUpdateException e)
         {
-            Console.WriteLine(e.Message);
+            _logger.LogError(e.Message);
             return null;
         }
     }
@@ -96,7 +99,7 @@ public class CityRepository : ICityRepository
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            _logger.LogError(e.Message);
             throw new InvalidOperationException("Error Occured while updating city.");
         }
     }

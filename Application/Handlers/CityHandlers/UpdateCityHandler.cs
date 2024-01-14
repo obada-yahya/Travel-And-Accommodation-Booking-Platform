@@ -22,7 +22,7 @@ public class UpdateCityHandler : IRequestHandler<UpdateCityCommand>
     {
         if (!await _cityRepository.IsExistsAsync(request.Id))
         {
-            throw new NotFoundException("City Doesn't Exists To Update");
+            throw new NotFoundException($"City With {request.Id} Doesn't Exists To Update");
         }
 
         var cityToUpdate = _mapper.Map<City>(request);

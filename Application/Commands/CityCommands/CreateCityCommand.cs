@@ -5,8 +5,8 @@ namespace Application.Commands.CityCommands;
 
 public record CreateCityCommand : IRequest<CityWithoutHotelsDto?>
 {
-    public string Name { get; set; } = string.Empty;
-    public string CountryName { get; set; } = string.Empty;
-    public string CountryCode { get; set; } = string.Empty;
-    public string PostOffice { get; set; } = string.Empty;
+    public string Name { get; set; }
+    public string CountryName { get; set; }
+    public string CountryCode { get; set; }
+    public string PostOffice { get; set; }
 }

@@ -9,10 +9,6 @@ public class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
     public void Configure(EntityTypeBuilder<AppUser> builder)
     {
         builder
-            .Property(appUser => appUser.Email)
-            .IsRequired();
-        
-        builder
             .Property(appUser => appUser.PasswordHash)
             .IsRequired();
         
