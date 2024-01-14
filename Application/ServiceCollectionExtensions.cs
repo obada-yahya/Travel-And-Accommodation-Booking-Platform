@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Application.Profiles;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application;
@@ -11,9 +12,10 @@ public static class ServiceCollectionExtensions
         
         services.AddMediatR(configuration =>
             configuration.RegisterServicesFromAssembly(assembly));
-
         services.AddValidatorsFromAssembly(assembly);
-
+        services.AddAutoMapper(typeof(CityProfile));
+        services.AddAutoMapper(typeof(HotelProfile));
+        
         return services;
     }
 }

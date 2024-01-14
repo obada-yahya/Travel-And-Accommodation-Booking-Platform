@@ -1,45 +1,72 @@
-﻿using Domain.Common.Interfaces;
+﻿using Domain.Common;
+using Domain.Common.Interfaces;
+using Domain.Common.Models;
 using Domain.Entities;
+using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Common.Persistence.Repositories;
 
 public class CityRepository : ICityRepository
 {
     private readonly ApplicationDbContext _context;
+    private readonly ILogger _logger;
 
-    public CityRepository(ApplicationDbContext context)
+    public CityRepository(ApplicationDbContext context, ILogger logger)
     {
         _context = context;
+        _logger = logger;
     }
 
-    public async Task<IReadOnlyList<City>> GetAllAsync()
+    public async Task<PaginatedList<City>> GetAllAsync(bool includeHotels, int pageNumber, int pageSize)
     {
         try
         {
-            return await _context
-                .Cities
-                .Include(city => city.Hotels)
+            var query = _context.Cities.AsQueryable();
+            var totalItemCount = await query.CountAsync();
+            var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+            
+            if (includeHotels)
+            {
+                query = query.Include(city => city.Hotels);
+            }
+
+            var result = query
+                .Skip(pageSize * (pageNumber - 1))
+                .Take(pageSize)
                 .AsNoTracking()
-                .ToListAsync();
+                .ToList();
+
+            return new PaginatedList<City>(result, pageData);
         }
         catch (Exception)
         {
-            return Array.Empty<City>();
+            return new PaginatedList<City>(new List<City>(), new PageData(0, 0, 0));
         }
     }
 
-    public async Task<City?> GetByIdAsync(Guid cityId)
+    public async Task<City?> GetByIdAsync(Guid cityId, bool includeHotels)
     {
         try
         {
-            return await _context
+            var query = _context
                 .Cities
-                .SingleAsync(city => city.Id.Equals(cityId));
+                .AsQueryable();
+
+            if (includeHotels)
+            {
+                query = query.Include(city => city.Hotels);
+            }
+
+            return await query
+                .AsNoTracking()
+                .SingleAsync
+                (city => city.Id.Equals(cityId));
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            _logger.LogError(e.Message);
         }
         return null;
     }
@@ -54,15 +81,27 @@ public class CityRepository : ICityRepository
         }
         catch (DbUpdateException e)
         {
-            Console.WriteLine(e.Message);
+            _logger.LogError(e.Message);
             return null;
         }
     }
 
     public async Task UpdateAsync(City city)
     {
-        _context.Cities.Update(city);
-        await SaveChangesAsync();
+        try
+        {
+            _context.Cities.Update(city);
+            await SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            throw new DataConstraintViolationException("Error updating the city. Check for a violation of city attributes.");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw new InvalidOperationException("Error Occured while updating city.");
+        }
     }
 
     public async Task DeleteAsync(Guid cityId)

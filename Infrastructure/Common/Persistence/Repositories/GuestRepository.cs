@@ -1,16 +1,19 @@
 ﻿using Domain.Common.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Common.Persistence.Repositories;
 
 public class GuestRepository : IGuestRepository
 {
     private readonly ApplicationDbContext _context;
+    private readonly ILogger _logger;
 
-    public GuestRepository(ApplicationDbContext context)
+    public GuestRepository(ApplicationDbContext context, ILogger logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<IReadOnlyList<Guest>> GetAllAsync()
@@ -39,7 +42,7 @@ public class GuestRepository : IGuestRepository
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            _logger.LogError(e.Message);
         }
         return null;
     }
@@ -54,7 +57,7 @@ public class GuestRepository : IGuestRepository
         }
         catch (DbUpdateException e)
         {
-            Console.WriteLine(e.Message);
+            _logger.LogError(e.Message);
             return null;
         }
     }
