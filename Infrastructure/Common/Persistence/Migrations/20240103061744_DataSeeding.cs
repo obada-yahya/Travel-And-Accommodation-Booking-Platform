@@ -90,7 +90,7 @@ namespace Infrastructure.Common.Persistence.Migrations
 
             migrationBuilder.InsertData(
                 table: "RoomTypes",
-                columns: new[] { "Id", "HotelId", "PricePerNight", "Type" },
+                columns: new[] { "Id", "HotelId", "PricePerNight", "Category" },
                 values: new object[,]
                 {
                     { new Guid("4b4c0ea5-0b9a-4a20-8ad9-77441fb912d2"), new Guid("9461e08b-92d3-45da-b6b3-efc0cfcc4a3a"), 200f, "Suite" },

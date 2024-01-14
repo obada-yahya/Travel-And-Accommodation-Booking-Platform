@@ -78,7 +78,7 @@ namespace Infrastructure.Common.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     HotelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PricePerNight = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
