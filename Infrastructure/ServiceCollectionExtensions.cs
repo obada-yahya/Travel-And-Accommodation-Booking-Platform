@@ -1,6 +1,6 @@
 ﻿using Domain.Common.Interfaces;
-using Infrastructure.Auth;
 using Infrastructure.Auth.AuthUser;
+using Infrastructure.Auth.Token;
 using Infrastructure.Common.Persistence.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using PasswordHashing;

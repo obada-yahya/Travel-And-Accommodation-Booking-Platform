@@ -11,9 +11,9 @@ namespace Infrastructure.Common.Persistence.Repositories;
 public class CityRepository : ICityRepository
 {
     private readonly ApplicationDbContext _context;
-    private readonly ILogger _logger;
+    private readonly ILogger<CityRepository> _logger;
 
-    public CityRepository(ApplicationDbContext context, ILogger logger)
+    public CityRepository(ApplicationDbContext context, ILogger<CityRepository> logger)
     {
         _context = context;
         _logger = logger;

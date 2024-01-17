@@ -1,6 +1,6 @@
 ﻿using Infrastructure.Auth.Models;
 
-namespace Infrastructure.Auth;
+namespace Infrastructure.Auth.Token;
 
 public interface ITokenGenerator
 {

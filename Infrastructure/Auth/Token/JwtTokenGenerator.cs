@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PasswordHashing;
 
-namespace Infrastructure.Auth;
+namespace Infrastructure.Auth.Token;
 
 public class JwtTokenGenerator : ITokenGenerator
 {
