@@ -11,7 +11,7 @@ namespace Infrastructure.Common.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "Type",
+                name: "Category",
                 table: "RoomTypes",
                 type: "nvarchar(50)",
                 maxLength: 50,
@@ -47,10 +47,10 @@ namespace Infrastructure.Common.Persistence.Migrations
                 oldType: "int");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomTypes_Type",
+                name: "IX_RoomTypes_Category",
                 table: "RoomTypes",
-                column: "Type",
-                unique: true);
+                column: "Category",
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rooms_RoomTypeId",
@@ -89,7 +89,7 @@ namespace Infrastructure.Common.Persistence.Migrations
                 table: "RoomTypes");
 
             migrationBuilder.DropIndex(
-                name: "IX_RoomTypes_Type",
+                name: "IX_RoomTypes_Category",
                 table: "RoomTypes");
 
             migrationBuilder.DropIndex(
@@ -97,7 +97,7 @@ namespace Infrastructure.Common.Persistence.Migrations
                 table: "Rooms");
 
             migrationBuilder.AlterColumn<string>(
-                name: "Type",
+                name: "Category",
                 table: "RoomTypes",
                 type: "nvarchar(max)",
                 nullable: false,

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Common.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231223103115_lkjsdf")]
+    [Migration("20231223103115_CountryDataConstraints")]
     partial class CountryDataConstraints
     {
         /// <inheritdoc />

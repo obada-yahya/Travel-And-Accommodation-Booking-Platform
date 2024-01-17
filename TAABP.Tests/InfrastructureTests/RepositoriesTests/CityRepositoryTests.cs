@@ -16,7 +16,7 @@ public class CityRepositoryTests
     {
         _testOutputHelper = testOutputHelper;
         // Should Comment OnConfiguring Method to work
-        var options = new DbContextOptionsBuilder()
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString());
         _context = new ApplicationDbContext(options.Options);
     }

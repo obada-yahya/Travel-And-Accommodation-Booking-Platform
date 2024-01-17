@@ -9,11 +9,11 @@ public class RoomTypeConfiguration: IEntityTypeConfiguration<RoomType>
     public void Configure(EntityTypeBuilder<RoomType> builder)
     {
         builder
-            .HasIndex(roomType => roomType.Type)
+            .HasIndex(roomType => roomType.Category)
             .IsUnique();
 
         builder
-            .Property(roomType => roomType.Type)
+            .Property(roomType => roomType.Category)
             .HasMaxLength(50)
             .IsRequired();
 
