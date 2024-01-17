@@ -22,6 +22,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Application\Application.csproj" />
+      <ProjectReference Include="..\PasswordHashing\PasswordHashing.csproj" />
     </ItemGroup>
 
 </Project>

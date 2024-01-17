@@ -1,16 +1,19 @@
 ﻿using Domain.Common.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Common.Persistence.Repositories;
 
 public class BookingRepository : IBookingRepository
 {
     private readonly ApplicationDbContext _context;
+    private readonly ILogger _logger;
 
-    public BookingRepository(ApplicationDbContext context)
+    public BookingRepository(ApplicationDbContext context, ILogger logger)
     {
         _context = context;
+        _logger = logger;
     }
     
     public async Task<IReadOnlyList<Booking>> GetAllAsync()
@@ -40,7 +43,7 @@ public class BookingRepository : IBookingRepository
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            _logger.LogError(e.Message);
         }
         return null;
     }
@@ -55,7 +58,7 @@ public class BookingRepository : IBookingRepository
         }
         catch (DbUpdateException e)
         {
-            Console.WriteLine(e.Message);
+            _logger.LogError(e.Message);
             return null;
         }
     }

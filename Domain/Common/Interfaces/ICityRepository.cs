@@ -1,14 +1,15 @@
-﻿using Domain.Entities;
-
+﻿using Domain.Common.Models;
+using Domain.Entities;
 namespace Domain.Common.Interfaces;
 
 public interface ICityRepository
 {
-    public Task<IReadOnlyList<City>> GetAllAsync();
-    public Task<City?> GetByIdAsync(Guid cityId);
-    Task<City?> InsertAsync(City city);
-    Task UpdateAsync(City city);
-    Task DeleteAsync(Guid cityId);
-    Task SaveChangesAsync();
-    Task<bool> IsExistsAsync(Guid cityId);
+    public Task<PaginatedList<City>>
+    GetAllAsync(bool includeHotels, int pageNumber, int pageSize);
+    public Task<City?> GetByIdAsync(Guid cityId, bool includeHotels);
+    public Task<City?> InsertAsync(City city);
+    public Task UpdateAsync(City city);
+    public Task DeleteAsync(Guid cityId);
+    public Task SaveChangesAsync();
+    public Task<bool> IsExistsAsync(Guid cityId);
 }
