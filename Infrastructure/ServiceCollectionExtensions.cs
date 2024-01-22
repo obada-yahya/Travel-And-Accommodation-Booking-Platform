@@ -2,6 +2,7 @@
 using Infrastructure.Auth.AuthUser;
 using Infrastructure.Auth.Token;
 using Infrastructure.Common.Persistence.Repositories;
+using Infrastructure.ImageStorage;
 using Microsoft.Extensions.DependencyInjection;
 using PasswordHashing;
 
@@ -16,6 +17,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ITokenGenerator, JwtTokenGenerator>();
         services.AddTransient<IPasswordGenerator, Argon2PasswordGenerator>();
         services.AddScoped<IAuthUser, AuthUser>();
+        services.AddScoped<IIMageService, FireBaseImageService>();
         return services;
     }
 }
