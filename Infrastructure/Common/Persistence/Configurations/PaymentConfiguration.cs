@@ -19,13 +19,11 @@ public class PaymentConfiguration: IEntityTypeConfiguration<Payment>
             .Property(payment => payment.Method)
             .IsRequired()
             .HasConversion(new EnumToStringConverter<PaymentMethod>());
-        
+
         builder
-            .HasIndex(payment => payment.Status)
-            .IsUnique();
-            
+            .HasIndex(payment => payment.Status);
+
         builder
-            .HasIndex(payment => payment.Method)
-            .IsUnique();
+            .HasIndex(payment => payment.Method);
     }
 }
