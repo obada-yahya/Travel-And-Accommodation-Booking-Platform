@@ -24,6 +24,7 @@ public class GetCitiesQueryHandler : IRequestHandler<GetCitiesQuery, PaginatedLi
             _cityRepository
             .GetAllAsync(
             request.IncludeHotels,
+            request.SearchQuery,
             request.PageNumber,
             request.PageSize);
 

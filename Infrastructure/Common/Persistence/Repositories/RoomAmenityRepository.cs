@@ -7,36 +7,31 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Common.Persistence.Repositories;
 
-public class CityRepository : ICityRepository
+public class RoomAmenityRepository : IRoomAmenityRepository
 {
     private readonly ApplicationDbContext _context;
-    private readonly ILogger<CityRepository> _logger;
+    private readonly ILogger<RoomAmenityRepository> _logger;
 
-    public CityRepository(ApplicationDbContext context, ILogger<CityRepository> logger)
+    public RoomAmenityRepository(ApplicationDbContext context, ILogger<RoomAmenityRepository> logger)
     {
         _context = context;
         _logger = logger;
     }
 
-    public async Task<PaginatedList<City>> GetAllAsync(bool includeHotels, string? searchQuery, int pageNumber, int pageSize)
+    public async Task<PaginatedList<RoomAmenity>> GetAllAsync(string? searchQuery, int pageNumber, int pageSize)
     {
         try
         {
-            var query = _context.Cities.AsQueryable();
+            var query = _context.RoomAmenities.AsQueryable();
             var totalItemCount = await query.CountAsync();
             var pageData = new PageData(totalItemCount, pageSize, pageNumber);
-            
+
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
                 searchQuery = searchQuery.Trim();
                 query = query.Where
-                        (city => city.Name.Contains(searchQuery) ||
-                        city.CountryName.Contains(searchQuery));
-            }
-            
-            if (includeHotels)
-            {
-                query = query.Include(city => city.Hotels);
+                (city => city.Name.Contains(searchQuery) || 
+                city.Description.Contains(searchQuery));
             }
 
             var result = query
@@ -45,31 +40,26 @@ public class CityRepository : ICityRepository
                 .AsNoTracking()
                 .ToList();
 
-            return new PaginatedList<City>(result, pageData);
+            return new PaginatedList<RoomAmenity>(result, pageData);
         }
         catch (Exception)
         {
-            return new PaginatedList<City>(new List<City>(), new PageData(0, 0, 0));
+            return new PaginatedList<RoomAmenity>(new List<RoomAmenity>(), new PageData(0, 0, 0));
         }
     }
 
-    public async Task<City?> GetByIdAsync(Guid cityId, bool includeHotels)
+    public async Task<RoomAmenity?> GetByIdAsync(Guid amenityId)
     {
         try
         {
             var query = _context
-                .Cities
+                .RoomAmenities
                 .AsQueryable();
-
-            if (includeHotels)
-            {
-                query = query.Include(city => city.Hotels);
-            }
-
+            
             return await query
                 .AsNoTracking()
                 .SingleAsync
-                (city => city.Id.Equals(cityId));
+                    (amenity => amenity.Id.Equals(amenityId));
         }
         catch (Exception e)
         {
@@ -78,13 +68,13 @@ public class CityRepository : ICityRepository
         return null;
     }
 
-    public async Task<City?> InsertAsync(City city)
+    public async Task<RoomAmenity?> InsertAsync(RoomAmenity roomAmenity)
     {
         try
         {
-            await _context.Cities.AddAsync(city);
+            await _context.RoomAmenities.AddAsync(roomAmenity);
             await SaveChangesAsync();
-            return city;
+            return roomAmenity;
         }
         catch (DbUpdateException e)
         {
@@ -93,28 +83,28 @@ public class CityRepository : ICityRepository
         }
     }
 
-    public async Task UpdateAsync(City city)
+    public async Task UpdateAsync(RoomAmenity roomAmenity)
     {
         try
         {
-            _context.Cities.Update(city);
+            _context.RoomAmenities.Update(roomAmenity);
             await SaveChangesAsync();
         }
         catch (DbUpdateException)
         {
-            throw new DataConstraintViolationException("Error updating the city. Check for a violation of city attributes.");
+            throw new DataConstraintViolationException("Error updating the roomAmenity. Check for a violation of roomAmenity attributes.");
         }
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            throw new InvalidOperationException("Error Occured while updating city.");
+            throw new InvalidOperationException("Error Occured while updating roomAmenity.");
         }
     }
 
-    public async Task DeleteAsync(Guid cityId)
+    public async Task DeleteAsync(Guid amenityId)
     {
-        var cityToRemove = new City { Id = cityId };
-        _context.Cities.Remove(cityToRemove);
+        var amenityToRemove = new RoomAmenity { Id = amenityId };
+        _context.RoomAmenities.Remove(amenityToRemove);
         await SaveChangesAsync();
     }
 
@@ -123,11 +113,11 @@ public class CityRepository : ICityRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> IsExistsAsync(Guid cityId)
+    public async Task<bool> IsExistsAsync(Guid amenityId)
     {
         return await _context
-            .Cities
+            .RoomAmenities
             .AnyAsync
-            (city => city.Id.Equals(cityId));
+            (roomAmenity => roomAmenity.Id.Equals(amenityId));
     }
 }

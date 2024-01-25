@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
         services.AddValidatorsFromAssembly(assembly);
         services.AddAutoMapper(typeof(CityProfile));
         services.AddAutoMapper(typeof(HotelProfile));
+        services.AddAutoMapper(typeof(RoomAmenityProfile));
         
         return services;
     }

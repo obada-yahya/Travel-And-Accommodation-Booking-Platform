@@ -23,6 +23,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Payment> Payments { get; set; }
     public DbSet<AppUser> AppUsers { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<RoomAmenity> RoomAmenities { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

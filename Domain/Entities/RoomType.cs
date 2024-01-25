@@ -8,4 +8,5 @@ public class RoomType
     public Guid HotelId { get; set; }
     public RoomCategory Category { get; set; }
     public float PricePerNight { get; set; }
+    public IList<RoomAmenity> Amenities { get; set; }
 }

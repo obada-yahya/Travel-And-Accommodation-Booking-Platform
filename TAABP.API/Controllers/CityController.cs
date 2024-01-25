@@ -36,6 +36,7 @@ public class CityController : Controller
     /// <param name="includeHotels">Include hotel details in the response.</param>
     /// <param name="pageSize">Number of items per page.</param>
     /// <param name="pageNumber">Page number.</param>
+    /// <param name="searchQuery">Search query string.</param>
     /// <returns>Returns a list of cities (with or without hotel details).</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -117,10 +118,10 @@ public class CityController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DeleteCityAsync(Guid cityId)
     {
-        var request = new DeleteCityCommand {Id = cityId};
+        var deleteCityCommand = new DeleteCityCommand {Id = cityId};
         try
         {
-            await _mediator.Send(request);
+            await _mediator.Send(deleteCityCommand);
             return NoContent();
         }
         catch (NotFoundException e)
@@ -241,7 +242,7 @@ public class CityController : Controller
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UploadeImageAsync(Guid cityId, [FromForm(Name = "Image")] IFormFile file)
+    public async Task<IActionResult> UploadImageAsync(Guid cityId, [FromForm(Name = "Image")] IFormFile file)
     {
         if (!await _mediator.Send(new CheckCityExistsQuery { Id = cityId })) 
             return NotFound($"City with ID {cityId} does not exist");

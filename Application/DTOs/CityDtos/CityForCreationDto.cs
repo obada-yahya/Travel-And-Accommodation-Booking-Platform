@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.CityDtos;
 
-public class CityForCreationDto
+public record CityForCreationDto
 {
     public string Name { get; set; } = string.Empty;
     public string CountryName { get; set; } = string.Empty;

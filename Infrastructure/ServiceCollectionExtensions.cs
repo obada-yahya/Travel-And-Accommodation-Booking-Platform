@@ -18,6 +18,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IPasswordGenerator, Argon2PasswordGenerator>();
         services.AddScoped<IAuthUser, AuthUser>();
         services.AddScoped<IIMageService, FireBaseImageService>();
+        services.AddScoped<IRoomAmenityRepository, RoomAmenityRepository>();
+        
         return services;
     }
 }
