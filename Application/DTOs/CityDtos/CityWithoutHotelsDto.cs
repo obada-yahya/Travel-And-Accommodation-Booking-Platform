@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.CityDtos;
 
-public class CityWithoutHotelsDto
+public record CityWithoutHotelsDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;

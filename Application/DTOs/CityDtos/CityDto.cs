@@ -2,7 +2,7 @@
 
 namespace Application.DTOs.CityDtos;
 
-public class CityDto
+public record CityDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;

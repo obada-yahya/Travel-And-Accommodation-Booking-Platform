@@ -2,7 +2,7 @@
 
 namespace Application.DTOs.HotelDtos;
 
-public class HotelDto
+public record HotelDto
 {
     public Guid Id { get; set; }
     public Guid CityId { get; set; }
