@@ -2,7 +2,7 @@
 
 namespace Application.Commands.CityCommands;
 
-public record UpdateCityCommand: IRequest
+public record UpdateCityCommand : IRequest
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
