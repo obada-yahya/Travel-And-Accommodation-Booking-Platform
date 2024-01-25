@@ -592,7 +592,7 @@ namespace Infrastructure.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RoomAmenity");
+                    b.ToTable("RoomAmenities");
                 });
 
             modelBuilder.Entity("Domain.Entities.RoomType", b =>

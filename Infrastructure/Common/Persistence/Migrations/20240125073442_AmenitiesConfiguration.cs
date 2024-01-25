@@ -12,7 +12,7 @@ namespace Infrastructure.Common.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "RoomAmenity",
+                name: "RoomAmenities",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -37,7 +37,7 @@ namespace Infrastructure.Common.Persistence.Migrations
                     table.ForeignKey(
                         name: "FK_RoomAmenityRoomType_RoomAmenity_AmenitiesId",
                         column: x => x.AmenitiesId,
-                        principalTable: "RoomAmenity",
+                        principalTable: "RoomAmenities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
