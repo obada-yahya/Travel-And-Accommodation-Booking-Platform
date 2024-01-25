@@ -14,5 +14,7 @@ public class RoomAmenityProfile : Profile
         // Commands and Queries
         CreateMap<RoomAmenityForCreationDto, CreateRoomAmenityCommand>();
         CreateMap<CreateRoomAmenityCommand, RoomAmenity>();
+        CreateMap<RoomAmenityForUpdateDto, UpdateRoomAmenityCommand>();
+        CreateMap<UpdateRoomAmenityCommand, RoomAmenity>();
     }
 }

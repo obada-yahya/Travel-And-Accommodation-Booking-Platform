@@ -1,10 +1,10 @@
-﻿using Application.DTOs.RoomAmenityDtos;
-using MediatR;
+﻿using MediatR;
 
 namespace Application.Commands.RoomAmenityCommands;
 
-public record CreateRoomAmenityCommand : IRequest<RoomAmenityDto?>
+public record UpdateRoomAmenityCommand : IRequest
 {
+    public Guid Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
 }
