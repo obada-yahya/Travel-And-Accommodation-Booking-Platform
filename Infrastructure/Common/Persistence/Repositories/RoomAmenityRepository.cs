@@ -18,13 +18,21 @@ public class RoomAmenityRepository : IRoomAmenityRepository
         _logger = logger;
     }
 
-    public async Task<PaginatedList<RoomAmenity>> GetAllAsync(int pageNumber, int pageSize)
+    public async Task<PaginatedList<RoomAmenity>> GetAllAsync(string? searchQuery, int pageNumber, int pageSize)
     {
         try
         {
             var query = _context.RoomAmenities.AsQueryable();
             var totalItemCount = await query.CountAsync();
             var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                searchQuery = searchQuery.Trim();
+                query = query.Where
+                (city => city.Name.Contains(searchQuery) || 
+                city.Description.Contains(searchQuery));
+            }
 
             var result = query
                 .Skip(pageSize * (pageNumber - 1))

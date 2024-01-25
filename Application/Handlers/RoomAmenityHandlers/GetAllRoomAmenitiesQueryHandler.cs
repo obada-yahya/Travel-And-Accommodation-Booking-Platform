@@ -23,6 +23,7 @@ public class GetAllRoomAmenitiesQueryHandler : IRequestHandler<GetAllRoomAmeniti
         var paginatedList = await 
             _roomAmenityRepository
                 .GetAllAsync(
+                    request.SearchQuery,
                     request.PageNumber,
                     request.PageSize);
 

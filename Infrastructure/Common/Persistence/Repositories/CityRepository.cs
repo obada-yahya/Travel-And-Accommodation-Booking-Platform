@@ -18,13 +18,21 @@ public class CityRepository : ICityRepository
         _logger = logger;
     }
 
-    public async Task<PaginatedList<City>> GetAllAsync(bool includeHotels, int pageNumber, int pageSize)
+    public async Task<PaginatedList<City>> GetAllAsync(bool includeHotels, string? searchQuery, int pageNumber, int pageSize)
     {
         try
         {
             var query = _context.Cities.AsQueryable();
             var totalItemCount = await query.CountAsync();
             var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+            
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                searchQuery = searchQuery.Trim();
+                query = query.Where
+                        (city => city.Name.Contains(searchQuery) ||
+                        city.CountryName.Contains(searchQuery));
+            }
             
             if (includeHotels)
             {

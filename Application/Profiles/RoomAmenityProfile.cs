@@ -10,6 +10,7 @@ public class RoomAmenityProfile : Profile
     public RoomAmenityProfile()
     {
         CreateMap<RoomAmenity, RoomAmenityDto>();
+        CreateMap<RoomAmenityDto, RoomAmenityForUpdateDto>();
         
         // Commands and Queries
         CreateMap<RoomAmenityForCreationDto, CreateRoomAmenityCommand>();
