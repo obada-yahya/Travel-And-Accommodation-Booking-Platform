@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddScoped<ICityRepository, CityRepository>();
-        services.AddScoped<IAppUserRepository, AppUserRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddTransient<ITokenGenerator, JwtTokenGenerator>();
         services.AddTransient<IPasswordGenerator, Argon2PasswordGenerator>();
         services.AddScoped<IAuthUser, AuthUser>();

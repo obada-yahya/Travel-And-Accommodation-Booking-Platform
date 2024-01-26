@@ -33,7 +33,7 @@ public class JwtTokenGenerator : ITokenGenerator
         {
             new("email", user.Email),
             new("password", user.Password),
-            new("Role", user.Role)
+            new("Role", user.Role.ToString())
         };
 
         var jwtSecurityToken = new JwtSecurityToken(

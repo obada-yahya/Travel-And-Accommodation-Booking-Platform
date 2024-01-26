@@ -1,4 +1,4 @@
-﻿using Application.Commands.AppUserCommands;
+﻿using Application.Commands.UserCommands;
 using Application.DTOs.AppUserDtos;
 using AutoMapper;
 using Infrastructure.Auth.Models;
@@ -72,7 +72,7 @@ public class AuthenticationController : Controller
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<string>> Register(
-        AppUserForCreationDto appUserForCreationDto)
+        UserForCreationDto appUserForCreationDto)
     {
         try
         {
@@ -80,7 +80,7 @@ public class AuthenticationController : Controller
             var errors = await validator.CheckForValidationErrorsAsync(appUserForCreationDto);
             if (errors.Count > 0) return BadRequest(errors);
             
-            var request = _mapper.Map<CreateAppUserCommand>(appUserForCreationDto);
+            var request = _mapper.Map<CreateUserCommand>(appUserForCreationDto);
             await _mediator.Send(request);
             return Ok("Register User Successfully.");
         }

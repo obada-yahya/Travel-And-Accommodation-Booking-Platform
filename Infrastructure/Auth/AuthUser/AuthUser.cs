@@ -15,16 +15,16 @@ public class AuthUser : IAuthUser
 
     public async Task<User?> GetUserAsync(string email)
     {
-        var appUser = await _context
-            .AppUsers
+        var user = await _context
+            .Users
             .SingleOrDefaultAsync(appUser => appUser.Email.Equals(email));
 
-        if (appUser is null) return null;
+        if (user is null) return null;
         
         return new User(
-            appUser.Email,
-            appUser.PasswordHash,
-            appUser.Role,
-            appUser.Salt);
+            user.Email,
+            user.PasswordHash,
+            user.Role,
+            user.Salt);
     }
 }

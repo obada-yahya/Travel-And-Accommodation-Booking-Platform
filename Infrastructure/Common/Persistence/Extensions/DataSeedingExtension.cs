@@ -9,7 +9,6 @@ public static class DataSeedingExtension
     public static void SeedTables(this ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<City>().HasData(CitySeeding.SeedData());
-        modelBuilder.Entity<Guest>().HasData(GuestSeeding.SeedData());
         modelBuilder.Entity<Owner>().HasData(OwnerSeeding.SeedData());
         modelBuilder.Entity<Hotel>().HasData(HotelSeeding.SeedData());
         modelBuilder.Entity<RoomType>().HasData(RoomTypeSeeding.SeedData());
