@@ -1,17 +1,17 @@
-﻿using Application.Commands.AppUserCommands;
+﻿using Application.Commands.UserCommands;
 using Application.DTOs.AppUserDtos;
 using AutoMapper;
 using Domain.Entities;
 
 namespace Application.Profiles;
 
-public class AppUserProfile : Profile
+public class UserProfile : Profile
 {
-    public AppUserProfile()
+    public UserProfile()
     {
-        CreateMap<CreateAppUserCommand, AppUser>()
+        CreateMap<CreateUserCommand, User>()
             .ForMember(dest => dest.PasswordHash,
             opt => opt.MapFrom(src => src.Password));
-        CreateMap<AppUserForCreationDto, CreateAppUserCommand>();
+        CreateMap<UserForCreationDto, CreateUserCommand>();
     }
 }

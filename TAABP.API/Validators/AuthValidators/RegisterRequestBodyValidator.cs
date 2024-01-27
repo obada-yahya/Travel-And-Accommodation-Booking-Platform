@@ -3,13 +3,19 @@ using FluentValidation;
 
 namespace TAABP.API.Validators.AuthValidators;
 
-public class RegisterRequestBodyValidator : GenericValidator<AppUserForCreationDto>
+public class RegisterRequestBodyValidator : GenericValidator<UserForCreationDto>
 {
     public RegisterRequestBodyValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email is required.")
             .EmailAddress().WithMessage("Invalid email address.");
+
+        RuleFor(x => x.FirstName)
+            .NotEmpty();
+        
+        RuleFor(x => x.LastName)
+            .NotEmpty();
         
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Password is required.")
