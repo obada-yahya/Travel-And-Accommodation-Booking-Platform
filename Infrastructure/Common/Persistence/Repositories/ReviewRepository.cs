@@ -1,4 +1,6 @@
-﻿using Domain.Common.Interfaces;
+﻿using System.Resources;
+using Domain.Common.Interfaces;
+using Domain.Common.Models;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,26 +10,48 @@ namespace Infrastructure.Common.Persistence.Repositories;
 public class ReviewRepository : IReviewRepository
 {
     private readonly ApplicationDbContext _context;
-    private readonly ILogger _logger;
+    private readonly ILogger<ReviewRepository> _logger;
 
-    public ReviewRepository(ApplicationDbContext context, ILogger logger)
+    public ReviewRepository(ApplicationDbContext context, ILogger<ReviewRepository> logger)
     {
         _context = context;
         _logger = logger;
     }
 
-    public async Task<IReadOnlyList<Review>> GetAllAsync()
+    public async Task<PaginatedList<Review>> GetAllByHotelIdAsync(Guid hotelId, string? searchQuery, int pageNumber, int pageSize)
     {
+        
         try
         {
-            return await _context
-                .Reviews
+            
+            var query = (from booking in _context.Bookings
+                    join room in _context.Rooms on booking.RoomId equals room.Id
+                    join roomType in _context.RoomTypes on room.RoomTypeId equals roomType.Id
+                    join hotel in _context.Hotels on roomType.HotelId equals hotel.Id
+                    join review in _context.Reviews on booking.Id equals review.BookingId
+                    where roomType.HotelId == hotelId
+                    select review).AsQueryable();
+            
+            var totalItemCount = await query.CountAsync();
+            var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+            
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                searchQuery = searchQuery.Trim();
+                query = query.Where
+                    (review => review.Comment.Contains(searchQuery));
+            }
+            var result = query
+                .Skip(pageSize * (pageNumber - 1))
+                .Take(pageSize)
                 .AsNoTracking()
-                .ToListAsync();
+                .ToList();
+        
+            return new PaginatedList<Review>(result, pageData);
         }
         catch (Exception)
         {
-            return Array.Empty<Review>();
+            return new PaginatedList<Review>(new List<Review>(), new PageData(0, 0, 0));
         }
     }
 
@@ -72,6 +96,17 @@ public class ReviewRepository : IReviewRepository
         var reviewToRemove = new Review { Id = reviewId };
         _context.Reviews.Remove(reviewToRemove);
         await SaveChangesAsync();
+    }
+
+    public async Task<bool> DoesBookingHaveReviewAsync(Guid bookingId)
+    {
+        return await _context
+            .Reviews
+            .AnyAsync
+            (review => 
+                review
+                .BookingId
+                .Equals(bookingId));
     }
 
     public async Task SaveChangesAsync()
