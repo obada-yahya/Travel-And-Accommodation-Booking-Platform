@@ -8,9 +8,9 @@ namespace Infrastructure.Common.Persistence.Repositories;
 public class BookingRepository : IBookingRepository
 {
     private readonly ApplicationDbContext _context;
-    private readonly ILogger _logger;
+    private readonly ILogger<BookingRepository> _logger;
 
-    public BookingRepository(ApplicationDbContext context, ILogger logger)
+    public BookingRepository(ApplicationDbContext context, ILogger<BookingRepository> logger)
     {
         _context = context;
         _logger = logger;
@@ -37,6 +37,11 @@ public class BookingRepository : IBookingRepository
     {
         try
         {
+            var bookings = _context.Bookings.ToList();
+            foreach (var booking in bookings)
+            {
+                _logger.LogInformation($"Look at : {booking.Id}");
+            }
             return await _context
                 .Bookings
                 .SingleAsync(booking => booking.Id.Equals(bookingId));
@@ -79,6 +84,20 @@ public class BookingRepository : IBookingRepository
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> CheckBookingExistenceForGuestAsync(Guid bookingId, string guestEmail)
+    {
+        var booking = await GetByIdAsync(bookingId);
+        
+        var guest = await _context
+                        .Users
+                        .SingleAsync
+                        (guest =>
+                        guest.Email
+                        .Equals(guestEmail));
+        
+        return booking!.UserId.Equals(guest.Id);
     }
 
     public async Task<bool> IsExistsAsync(Guid bookingId)
