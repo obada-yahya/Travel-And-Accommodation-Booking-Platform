@@ -24,13 +24,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<Image> Images { get; set; }
     public DbSet<RoomAmenity> RoomAmenities { get; set; }
     
-    
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     optionsBuilder.UseSqlServer(
-    //     @"Server=DESKTOP-EKG9OL3\SQLEXPRESS;Database=TravelAndAccommodationBooking;Trusted_Connection=True;TrustServerCertificate=True");
-    // }
-    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
