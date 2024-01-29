@@ -1,5 +1,4 @@
-﻿using System.Resources;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Text.Json;
 using Application.Commands.ReviewCommands;
 using Application.DTOs.ReviewsDtos;
@@ -26,11 +25,24 @@ public class ReviewController : Controller
         _mapper = mapper;
     }
     
+    /// <summary>
+    /// Retrieves a paginated list of reviews for a specific hotel.
+    /// </summary>
+    /// <param name="hotelId">The ID of the hotel for which reviews are requested.</param>
+    /// <param name="reviewQueryDto">DTO containing parameters for pagination and filtering.</param>
+    /// <returns>
+    /// Returns a paginated list of reviews for the specified hotel.
+    /// </returns>
+    /// <response code="200">Returns a paginated list of reviews.</response>
+    /// <response code="400">Returns validation errors if the request parameters are invalid.</response>
+    /// <response code="401">Returns if the user is not authenticated.</response>
+    /// <response code="403">Returns if the user does not have permission to access the resource.</response>
+    /// <response code="500">Returns if an unexpected error occurs.</response>
     [HttpGet("{hotelId}/reviews")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [Authorize]
     public async Task<IActionResult> GetAllReviewsAsync(Guid hotelId,
         [FromQuery] ReviewQueryDto reviewQueryDto)
@@ -49,11 +61,24 @@ public class ReviewController : Controller
         return Ok(paginatedListOfCities.Items);
     }
     
+    /// <summary>
+    /// Creates a new review.
+    /// </summary>
+    /// <param name="review">DTO containing review data.</param>
+    /// <returns>
+    /// Returns the created review if successful.
+    /// </returns>
+    /// <response code="201">Returns the created review.</response>
+    /// <response code="400">Returns if the request parameters are invalid or a review already exists for the booking.</response>
+    /// <response code="401">Returns if the user is not authenticated or not authorized to create a review.</response>
+    /// <response code="404">Returns if the booking does not exist.</response>
+    /// <response code="500">Returns if an unexpected error occurs.</response>
     [HttpPost("reviews")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [Authorize]
     public async Task<ActionResult<ReviewDto>> CreateReviewAsync(ReviewForCreationDto review)
     {
