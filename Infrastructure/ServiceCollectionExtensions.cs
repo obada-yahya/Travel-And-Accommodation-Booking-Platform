@@ -19,6 +19,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthUser, AuthUser>();
         services.AddScoped<IIMageService, FireBaseImageService>();
         services.AddScoped<IRoomAmenityRepository, RoomAmenityRepository>();
+        services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.AddScoped<IBookingRepository, BookingRepository>();
         
         return services;
     }
