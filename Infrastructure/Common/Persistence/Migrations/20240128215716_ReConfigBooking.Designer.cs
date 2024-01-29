@@ -58,35 +58,6 @@ namespace Infrastructure.Common.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Bookings");
-
-                    // b.HasData(
-                    //     new
-                    //     {
-                    //         Id = new Guid("7d3155a2-95f8-4d9b-bc24-662ae053f1c9"),
-                    //         BookingDate = new DateTime(2023, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                    //         CheckInDate = new DateTime(2023, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                    //         CheckOutDate = new DateTime(2023, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                    //         GuestId = new Guid("c6c45f7c-2dfe-4c1e-9a9b-8b173c71b32c"),
-                    //         RoomId = new Guid("a98b8a9d-4c5a-4a90-a2d2-5f1441b93db6")
-                    //     },
-                    //     new
-                    //     {
-                    //         Id = new Guid("efeb3d13-3dab-46c9-aa9a-9f22dd58e06e"),
-                    //         BookingDate = new DateTime(2023, 1, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                    //         CheckInDate = new DateTime(2023, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                    //         CheckOutDate = new DateTime(2023, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                    //         GuestId = new Guid("aaf21a7d-8fc3-4c9f-8a8e-1eeec8dcd462"),
-                    //         RoomId = new Guid("4e1cb3d9-bc3b-4997-a3d5-0c56cf17fe7a")
-                    //     },
-                    //     new
-                    //     {
-                    //         Id = new Guid("0bf4a177-98b8-4f67-8a56-95669c320890"),
-                    //         BookingDate = new DateTime(2023, 3, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                    //         CheckInDate = new DateTime(2023, 3, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                    //         CheckOutDate = new DateTime(2023, 3, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                    //         GuestId = new Guid("f44c3eb4-2c8a-4a77-a31b-04c4619aa15a"),
-                    //         RoomId = new Guid("c6898b7e-ee09-4b36-8b20-22e8c2a63e29")
-                    //     });
                 });
 
             modelBuilder.Entity("Domain.Entities.City", b =>
@@ -626,12 +597,6 @@ namespace Infrastructure.Common.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Booking", b =>
                 {
-                    // b.HasOne("Domain.Entities.User", null)
-                    //     .WithMany()
-                    //     .HasForeignKey("GuestId")
-                    //     .OnDelete(DeleteBehavior.Cascade)
-                    //     .IsRequired();
-
                     b.HasOne("Domain.Entities.Room", null)
                         .WithMany()
                         .HasForeignKey("RoomId")

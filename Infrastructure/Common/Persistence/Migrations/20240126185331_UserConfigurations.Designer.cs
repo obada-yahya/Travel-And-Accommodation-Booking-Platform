@@ -808,11 +808,6 @@ namespace Infrastructure.Common.Persistence.Migrations
                 {
                     b.Navigation("Hotels");
                 });
-
-            // modelBuilder.Entity("Domain.Entities.User", b =>
-            //     {
-            //         b.Navigation("Bookings");
-            //     });
 #pragma warning restore 612, 618
         }
     }
