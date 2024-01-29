@@ -10,5 +10,7 @@ public interface IUserRepository
     public Task UpdateAsync(User user);
     public Task DeleteAsync(Guid userId);
     public Task<bool> IsExistsAsync(Guid userId);
+    public Task<List<Hotel>> GetRecentlyVisitedHotelsForGuestAsync(Guid guestId, int count);
+    public Task<List<Hotel>> GetRecentlyVisitedHotelsForAuthenticatedGuest(string email, int count);
     public Task SaveChangesAsync();
 }

@@ -22,36 +22,6 @@ namespace Infrastructure.Common.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Entities.AppUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Salt")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.ToTable("AppUsers");
-                });
-
             modelBuilder.Entity("Domain.Entities.Booking", b =>
                 {
                     b.Property<Guid>("Id")
@@ -170,63 +140,6 @@ namespace Infrastructure.Common.Persistence.Migrations
                             CountryName = "Japan",
                             Name = "Tokyo",
                             PostOffice = "TKY"
-                        });
-                });
-
-            modelBuilder.Entity("Domain.Entities.Guest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Guest");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("c6c45f7c-2dfe-4c1e-9a9b-8b173c71b32c"),
-                            Email = "john.doe@example.com",
-                            FirstName = "John",
-                            LastName = "Doe",
-                            PhoneNumber = "1234567890"
-                        },
-                        new
-                        {
-                            Id = new Guid("aaf21a7d-8fc3-4c9f-8a8e-1eeec8dcd462"),
-                            Email = "jane.smith@example.com",
-                            FirstName = "Jane",
-                            LastName = "Smith",
-                            PhoneNumber = "2012345678"
-                        },
-                        new
-                        {
-                            Id = new Guid("f44c3eb4-2c8a-4a77-a31b-04c4619aa15a"),
-                            Email = "hiroshi.tanaka@example.co.jp",
-                            FirstName = "Hiroshi",
-                            LastName = "Tanaka",
-                            PhoneNumber = "312345678"
                         });
                 });
 

@@ -85,7 +85,32 @@ public class UserRepository : IUserRepository
             .AnyAsync
             (user => user.Id.Equals(userId));
     }
-    
+
+    public async Task<List<Hotel>> GetRecentlyVisitedHotelsForGuestAsync(Guid guestId, int count)
+    {
+        return await (from booking in _context.Bookings
+                join room in _context.Rooms on booking.RoomId equals room.Id
+                join roomType in _context.RoomTypes on room.RoomTypeId equals roomType.Id
+                join hotel in _context.Hotels on roomType.HotelId equals hotel.Id
+                where booking.GuestId == guestId
+                orderby booking.CheckInDate descending
+                select hotel).Distinct().Take(count)
+            .ToListAsync();
+    }
+
+    public async Task<List<Hotel>> GetRecentlyVisitedHotelsForAuthenticatedGuest(string email, int count)
+    {
+        var guestId = (await _context
+                           .Users
+                           .Where
+                           (user => user
+                               .Email
+                               .Equals(email))
+                           .SingleAsync()).Id;
+        
+        return await GetRecentlyVisitedHotelsForGuestAsync(guestId, count);
+    }
+
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();

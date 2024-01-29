@@ -15,11 +15,11 @@ public class BookingConfiguration: IEntityTypeConfiguration<Booking>
             .HasForeignKey(booking => booking.RoomId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        builder
-            .HasOne<User>() 
-            .WithMany()
-            .IsRequired()
-            .HasForeignKey(booking => booking.GuestId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // builder
+        //     .HasOne<User>() 
+        //     .WithMany()
+        //     .IsRequired()
+        //     .HasForeignKey(booking => booking.UserId)
+        //     .OnDelete(DeleteBehavior.Cascade);
     }
 }
