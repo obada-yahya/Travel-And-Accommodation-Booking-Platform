@@ -1,5 +1,7 @@
 ﻿using Domain.Common.Interfaces;
+using Domain.Common.Models;
 using Domain.Entities;
+using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -37,11 +39,6 @@ public class BookingRepository : IBookingRepository
     {
         try
         {
-            var bookings = _context.Bookings.ToList();
-            foreach (var booking in bookings)
-            {
-                _logger.LogInformation($"Look at : {booking.Id}");
-            }
             return await _context
                 .Bookings
                 .SingleAsync(booking => booking.Id.Equals(bookingId));
@@ -76,7 +73,13 @@ public class BookingRepository : IBookingRepository
 
     public async Task DeleteAsync(Guid bookingId)
     {
-        var bookingToRemove = new Booking { Id = bookingId };
+        var bookingToRemove = await GetByIdAsync(bookingId);
+        
+        if (bookingToRemove!.CheckInDate.Date <= DateTime.Today)
+        {
+            throw new BookingCheckInDatePassedException();
+        }
+        
         _context.Bookings.Remove(bookingToRemove);
         await SaveChangesAsync();
     }

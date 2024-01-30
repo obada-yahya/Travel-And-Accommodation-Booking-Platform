@@ -13,7 +13,7 @@ using TAABP.API.Validators.ReviewsValidators;
 namespace TAABP.API.Controllers;
 
 [ApiController]
-[Route("/api/hotels")]
+[Route("/api/reviews")]
 public class ReviewController : Controller
 {
     private readonly IMediator _mediator;
@@ -38,7 +38,7 @@ public class ReviewController : Controller
     /// <response code="401">Returns if the user is not authenticated.</response>
     /// <response code="403">Returns if the user does not have permission to access the resource.</response>
     /// <response code="500">Returns if an unexpected error occurs.</response>
-    [HttpGet("{hotelId}/reviews")]
+    [HttpGet("hotels/{hotelId}")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -73,10 +73,11 @@ public class ReviewController : Controller
     /// <response code="401">Returns if the user is not authenticated or not authorized to create a review.</response>
     /// <response code="404">Returns if the booking does not exist.</response>
     /// <response code="500">Returns if an unexpected error occurs.</response>
-    [HttpPost("reviews")]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [Authorize]
@@ -89,10 +90,10 @@ public class ReviewController : Controller
             return NotFound($"Booking with ID {review.BookingId} does not exist");
         
         if (!await CheckAuthorizedGuestAsync(review.BookingId, emailClaim))
-            return NotFound("The authenticated user is not the same as the one who booked the room");
+            return Unauthorized("The authenticated user is not the same as the one who booked the room");
         
         if(await CheckReviewExistsForBookingAsync(review.BookingId))
-            return NotFound("You already did a review for this booking");
+            return Conflict("You already did a review for this booking");
         
         var validator = new CreateReviewValidator();
         var errors = await validator.CheckForValidationErrorsAsync(review);
