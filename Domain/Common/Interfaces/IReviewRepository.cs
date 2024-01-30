@@ -1,14 +1,16 @@
-﻿using Domain.Entities;
+﻿using Domain.Common.Models;
+using Domain.Entities;
 
 namespace Domain.Common.Interfaces;
 
 public interface IReviewRepository
 {
-    public Task<IReadOnlyList<Review>> GetAllAsync();
+    public Task<PaginatedList<Review>> GetAllByHotelIdAsync(Guid hotelId, string? searchQuery, int pageNumber, int pageSize);
     public Task<Review?> GetByIdAsync(Guid reviewId);
-    Task<Review?> InsertAsync(Review review);
-    Task UpdateAsync(Review review);
-    Task DeleteAsync(Guid reviewId);
-    Task SaveChangesAsync();
-    Task<bool> IsExistsAsync(Guid reviewId);
+    public Task<Review?> InsertAsync(Review review);
+    public Task UpdateAsync(Review review);
+    public Task DeleteAsync(Guid reviewId);
+    public Task<bool> DoesBookingHaveReviewAsync(Guid bookingId);
+    public Task SaveChangesAsync();
+    public Task<bool> IsExistsAsync(Guid reviewId);
 }

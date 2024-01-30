@@ -92,7 +92,7 @@ public class UserRepository : IUserRepository
                 join room in _context.Rooms on booking.RoomId equals room.Id
                 join roomType in _context.RoomTypes on room.RoomTypeId equals roomType.Id
                 join hotel in _context.Hotels on roomType.HotelId equals hotel.Id
-                where booking.GuestId == guestId
+                where booking.UserId == guestId
                 orderby booking.CheckInDate descending
                 select hotel).Distinct().Take(count)
             .ToListAsync();

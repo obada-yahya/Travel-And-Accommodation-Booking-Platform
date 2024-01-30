@@ -1,5 +1,7 @@
 ﻿using Domain.Common.Interfaces;
+using Domain.Common.Models;
 using Domain.Entities;
+using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -8,9 +10,9 @@ namespace Infrastructure.Common.Persistence.Repositories;
 public class BookingRepository : IBookingRepository
 {
     private readonly ApplicationDbContext _context;
-    private readonly ILogger _logger;
+    private readonly ILogger<BookingRepository> _logger;
 
-    public BookingRepository(ApplicationDbContext context, ILogger logger)
+    public BookingRepository(ApplicationDbContext context, ILogger<BookingRepository> logger)
     {
         _context = context;
         _logger = logger;
@@ -71,7 +73,13 @@ public class BookingRepository : IBookingRepository
 
     public async Task DeleteAsync(Guid bookingId)
     {
-        var bookingToRemove = new Booking { Id = bookingId };
+        var bookingToRemove = await GetByIdAsync(bookingId);
+        
+        if (bookingToRemove!.CheckInDate.Date <= DateTime.Today)
+        {
+            throw new BookingCheckInDatePassedException();
+        }
+        
         _context.Bookings.Remove(bookingToRemove);
         await SaveChangesAsync();
     }
@@ -79,6 +87,20 @@ public class BookingRepository : IBookingRepository
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> CheckBookingExistenceForGuestAsync(Guid bookingId, string guestEmail)
+    {
+        var booking = await GetByIdAsync(bookingId);
+        
+        var guest = await _context
+                        .Users
+                        .SingleAsync
+                        (guest =>
+                        guest.Email
+                        .Equals(guestEmail));
+        
+        return booking!.UserId.Equals(guest.Id);
     }
 
     public async Task<bool> IsExistsAsync(Guid bookingId)
