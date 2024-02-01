@@ -1,12 +1,11 @@
-﻿using Application.Queries.RoomAmenityQueries;
+﻿using Application.Queries.HotelQueries;
 using FluentValidation;
-using Infrastructure.Auth.Models;
 
-namespace TAABP.API.Validators.RoomAmenityValidators;
+namespace TAABP.API.Validators.HotelValidators;
 
-public class GetAllRoomAmenitiesValidator : GenericValidator<GetAllRoomAmenitiesQuery>
+public class GetAllHotelsValidator : GenericValidator<GetAllHotelsQuery>
 {
-    public GetAllRoomAmenitiesValidator()
+    public GetAllHotelsValidator()
     {
         RuleFor(roomAmenity => roomAmenity.PageNumber)
             .GreaterThan(0)
