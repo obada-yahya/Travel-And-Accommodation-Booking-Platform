@@ -17,6 +17,16 @@ public class UserRepository : IUserRepository
         _logger = logger;
     }
 
+    public async Task<Guid> GetGuestIdByEmailAsync(string email)
+    {
+        return (await _context
+            .Users
+            .Where
+            (user => user
+                .Email
+                .Equals(email))
+            .SingleAsync()).Id;
+    }
     public async Task InsertAsync(User user)
     {
         try
@@ -98,19 +108,23 @@ public class UserRepository : IUserRepository
             .ToListAsync();
     }
 
-    public async Task<List<Hotel>> GetRecentlyVisitedHotelsForAuthenticatedGuest(string email, int count)
+    public async Task<List<Hotel>> GetRecentlyVisitedHotelsForAuthenticatedGuestAsync(string email, int count)
     {
-        var guestId = (await _context
-                           .Users
-                           .Where
-                           (user => user
-                               .Email
-                               .Equals(email))
-                           .SingleAsync()).Id;
-        
+        var guestId = await GetGuestIdByEmailAsync(email);
         return await GetRecentlyVisitedHotelsForGuestAsync(guestId, count);
     }
 
+    public async Task<List<Booking>> GetBookingsForAuthenticatedGuestAsync(string email, int count)
+    {
+        var guestId = await GetGuestIdByEmailAsync(email);
+        return await (from booking in _context.Bookings
+            where booking.UserId == guestId
+            orderby booking.CheckInDate descending
+            select booking)
+            .Take(count)
+            .ToListAsync();
+    }
+    
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
