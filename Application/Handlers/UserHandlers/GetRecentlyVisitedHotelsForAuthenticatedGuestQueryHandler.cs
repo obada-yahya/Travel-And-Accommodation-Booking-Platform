@@ -23,7 +23,7 @@ public class GetRecentlyVisitedHotelsForAuthenticatedGuestQueryHandler :
     {
         return _mapper.Map<List<HotelWithoutRoomsDto>>
         (await _userRepository
-        .GetRecentlyVisitedHotelsForAuthenticatedGuest
+        .GetRecentlyVisitedHotelsForAuthenticatedGuestAsync
         (request.Email, request.Count));
     }
 }
