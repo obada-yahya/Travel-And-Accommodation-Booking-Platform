@@ -67,6 +67,10 @@ public class GuestController : Controller
         return Ok(await _mediator.Send(request));
     }
 
+    /// <summary>
+    /// Retrieves bookings for the authenticated guest.
+    /// </summary>
+    /// <returns>Returns the bookings for the authenticated guest.</returns>
     [HttpGet("bookings")]
     [Authorize]
     public async Task<IActionResult> GetBookingsForAuthenticatedGuestAsync(int count = 5)
@@ -80,6 +84,10 @@ public class GuestController : Controller
         return Ok(await _mediator.Send(request));
     }
     
+    /// <summary>
+    /// Cancels a booking for the authenticated guest.
+    /// </summary>
+    /// <param name="bookingId">The ID of the booking to cancel.</param>
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
