@@ -5,7 +5,7 @@ namespace Domain.Common.Interfaces;
 public interface ICityRepository
 {
     public Task<PaginatedList<City>>
-    GetAllAsync(bool includeHotels, string searchQuery, int pageNumber, int pageSize);
+    GetAllAsync(bool includeHotels, string? searchQuery, int pageNumber, int pageSize);
     public Task<City?> GetByIdAsync(Guid cityId, bool includeHotels);
     public Task<City?> InsertAsync(City city);
     public Task UpdateAsync(City city);
