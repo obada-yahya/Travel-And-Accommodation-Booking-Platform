@@ -15,6 +15,6 @@ public class CheckBookingExistsQueryHandler : IRequestHandler<CheckBookingExists
 
     public async Task<bool> Handle(CheckBookingExistsQuery request, CancellationToken cancellationToken)
     {
-        return await _bookingRepository.IsExistsAsync(request.BookingId);
+        return await _bookingRepository.IsExistsAsync(request.Id);
     }
 }

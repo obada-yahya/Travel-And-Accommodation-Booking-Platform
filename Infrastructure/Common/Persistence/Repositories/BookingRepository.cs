@@ -17,6 +17,51 @@ public class BookingRepository : IBookingRepository
         _context = context;
         _logger = logger;
     }
+
+    public async Task<PaginatedList<Booking>> GetAllByHotelIdAsync(
+        Guid hotelId,
+        int pageNumber,
+        int pageSize)
+    {
+        try
+        {
+            var query = (from booking in _context.Bookings
+                    join room in _context.Rooms on booking.RoomId equals room.Id
+                    join roomType in _context.RoomTypes on room.RoomTypeId equals roomType.Id
+                    join hotel in _context.Hotels on roomType.HotelId equals hotel.Id
+                    where roomType.HotelId == hotelId
+                    select booking)
+                .AsQueryable()
+                .AsNoTracking();
+
+            var totalItemCount = await query.CountAsync();
+            var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+
+            var result = query
+                .Skip(pageSize * (pageNumber - 1))
+                .Take(pageSize)
+                .AsNoTracking()
+                .ToList();
+
+            return new PaginatedList<Booking>(result, pageData);
+        }
+        catch (Exception)
+        {
+            return new PaginatedList<Booking>(new List<Booking>(), new PageData(0, 0, 0));
+        }
+    }
+
+    private async Task<bool> CanBookRoom(Guid roomId, DateTime proposedCheckIn, DateTime proposedCheckOut)
+    {
+        var roomBookings = await _context
+            .Bookings
+            .Where(b => b.RoomId.Equals(roomId))
+            .ToListAsync();
+
+        return roomBookings.All(booking => 
+            proposedCheckIn.Date > booking.CheckOutDate.Date || 
+            proposedCheckOut.Date < booking.CheckInDate.Date);
+    }
     
     public async Task<IReadOnlyList<Booking>> GetAllAsync()
     {
@@ -52,17 +97,14 @@ public class BookingRepository : IBookingRepository
 
     public async Task<Booking?> InsertAsync(Booking booking)
     {
-        try
-        {
-            await _context.Bookings.AddAsync(booking);
-            await SaveChangesAsync();
-            return booking;
-        }
-        catch (DbUpdateException e)
-        {
-            _logger.LogError(e.Message);
-            return null;
-        }
+        if (!await CanBookRoom(
+                booking.RoomId,
+                booking.CheckInDate,
+                booking.CheckOutDate)) return null;
+        
+        await _context.Bookings.AddAsync(booking);
+        await SaveChangesAsync();
+        return booking;
     }
 
     public async Task UpdateAsync(Booking booking)
@@ -75,7 +117,7 @@ public class BookingRepository : IBookingRepository
     {
         var bookingToRemove = await GetByIdAsync(bookingId);
         
-        if (bookingToRemove!.CheckInDate.Date <= DateTime.Today)
+        if (bookingToRemove!.CheckInDate.Date <= DateTime.Today.Date)
         {
             throw new BookingCheckInDatePassedException();
         }
