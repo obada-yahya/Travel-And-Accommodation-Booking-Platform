@@ -4,5 +4,5 @@ namespace Application.Queries.BookingQueries;
 
 public record CheckBookingExistsQuery : IRequest<bool>
 {
-    public Guid BookingId { get; set; }
+    public Guid Id { get; set; }
 };

@@ -25,7 +25,7 @@ public class FireBaseImageService : IIMageService
         BucketName = _configuration["FireBaseBucketName"]!;
     }
 
-    public async Task<string> GetImagePublicUrl(string destinationObjectName)
+    private async Task<string> GetImagePublicUrl(string destinationObjectName)
     {
         var storage = new FirebaseStorage(BucketName);
         var starsRef = storage.Child(destinationObjectName);

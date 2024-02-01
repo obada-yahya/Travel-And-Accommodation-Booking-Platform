@@ -8,9 +8,9 @@ namespace Infrastructure.Common.Persistence.Repositories;
 public class RoomRepository : IRoomRepository
 {
     private readonly ApplicationDbContext _context;
-    private readonly ILogger _logger;
+    private readonly ILogger<RoomRepository> _logger;
 
-    public RoomRepository(ApplicationDbContext context, ILogger logger)
+    public RoomRepository(ApplicationDbContext context, ILogger<RoomRepository> logger)
     {
         _context = context;
         _logger = logger;

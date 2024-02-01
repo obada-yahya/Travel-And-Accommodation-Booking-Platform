@@ -114,7 +114,7 @@ public class ReviewController : Controller
         return await _mediator
             .Send(new CheckBookingExistsQuery
             {
-                BookingId = bookingId
+                Id = bookingId
             });
     }
     
