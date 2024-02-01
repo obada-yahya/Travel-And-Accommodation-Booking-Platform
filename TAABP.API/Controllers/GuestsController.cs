@@ -15,11 +15,11 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("api/guests")]
-public class GuestController : Controller
+public class GuestsController : Controller
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
-    public GuestController(IMediator mediator, IMapper mapper)
+    public GuestsController(IMediator mediator, IMapper mapper)
     {
         _mediator = mediator;
         _mapper = mapper;

@@ -11,12 +11,12 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("/api/hotels")]
-public class HotelController : Controller
+public class HotelsController : Controller
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    public HotelController(IMapper mapper, IMediator mediator)
+    public HotelsController(IMapper mapper, IMediator mediator)
     {
         _mapper = mapper;
         _mediator = mediator;

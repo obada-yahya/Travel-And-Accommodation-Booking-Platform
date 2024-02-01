@@ -17,13 +17,13 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("api/cities")]
-public class CityController : Controller
+public class CitiesController : Controller
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
     private readonly IIMageService _imageService;
     
-    public CityController(IMediator mediator, IMapper mapper, IIMageService imageService)
+    public CitiesController(IMediator mediator, IMapper mapper, IIMageService imageService)
     {
         _mediator = mediator;
         _mapper = mapper;

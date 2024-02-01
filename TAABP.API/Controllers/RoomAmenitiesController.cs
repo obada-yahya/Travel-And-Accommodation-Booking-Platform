@@ -14,12 +14,12 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("api/room-amenities")]
-public class RoomAmenityController : Controller
+public class RoomAmenitiesController : Controller
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
     
-    public RoomAmenityController(IMediator mediator, IMapper mapper)
+    public RoomAmenitiesController(IMediator mediator, IMapper mapper)
     {
         _mediator = mediator;
         _mapper = mapper;
