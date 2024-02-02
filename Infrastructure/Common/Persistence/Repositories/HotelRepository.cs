@@ -106,6 +106,37 @@ public class HotelRepository : IHotelRepository
         _context.Hotels.Remove(hotelToRemove);
         await _context.SaveChangesAsync();
     }
+    
+    private bool IsRoomAvailable(Guid roomId, DateTime checkInDate, DateTime checkOutDate)
+    {
+        var roomBookings = _context
+            .Bookings
+            .Where(b => b.RoomId.Equals(roomId))
+            .ToList();
+
+        return roomBookings.All(booking => 
+            checkInDate.Date > booking.CheckOutDate.Date || 
+            checkOutDate.Date < booking.CheckInDate.Date);
+    }
+
+    public async Task<List<Room>> GetHotelAvailableRoomsAsync(
+        Guid hotelId,
+        DateTime checkInDate,
+        DateTime checkOutDate)
+    {
+        var rooms = await (from hotel in _context.Hotels
+            join roomType in _context.RoomTypes on hotel.Id equals roomType.HotelId
+            join room in _context.Rooms on roomType.Id equals room.RoomTypeId
+            where roomType.HotelId.Equals(hotelId)
+            select room
+            ).ToListAsync();
+
+        return rooms.Where(room => 
+            IsRoomAvailable(
+            room.Id,
+            checkInDate,
+            checkOutDate)).ToList();
+    }
 
     public async Task SaveChangesAsync()
     {
