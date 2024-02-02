@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ITokenGenerator, JwtTokenGenerator>();
         services.AddTransient<IPasswordGenerator, Argon2PasswordGenerator>();
         services.AddScoped<IAuthUser, AuthUser>();
-        services.AddScoped<IIMageService, FireBaseImageService>();
+        services.AddScoped<IImageService, FireBaseImageService>();
         services.AddScoped<IRoomAmenityRepository, RoomAmenityRepository>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();

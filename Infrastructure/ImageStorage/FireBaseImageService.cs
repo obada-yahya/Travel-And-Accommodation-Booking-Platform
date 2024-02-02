@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.ImageStorage;
 
-public class FireBaseImageService : IIMageService
+public class FireBaseImageService : IImageService
 {
     private readonly ApplicationDbContext _context;
     private readonly IConfiguration _configuration;
