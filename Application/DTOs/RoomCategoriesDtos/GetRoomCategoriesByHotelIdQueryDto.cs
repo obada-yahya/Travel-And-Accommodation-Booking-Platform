@@ -1,9 +1,8 @@
-﻿namespace Application.DTOs.RoomDtos;
+﻿namespace Application.DTOs.RoomCategoriesDtos;
 
-public record GetRoomsByHotelIdDto
+public record GetRoomCategoriesByHotelIdDto
 {
     public bool IncludeAmenities { get; set; } = true;
-    public string? SearchQuery { get; set; }
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
 }
