@@ -5,7 +5,7 @@ using Domain.Common.Interfaces;
 using Domain.Common.Models;
 using MediatR;
 
-namespace Application.Handlers.ReviewHandler;
+namespace Application.Handlers.ReviewHandlers;
 
 public class GetReviewsQueryHandler : IRequestHandler<GetReviewsQuery, PaginatedList<ReviewDto>>
 {

@@ -2,7 +2,7 @@
 using Domain.Common.Interfaces;
 using MediatR;
 
-namespace Application.Handlers.ReviewHandler;
+namespace Application.Handlers.ReviewHandlers;
 
 public class CheckReviewExistenceForBookingQueryHandler : IRequestHandler<CheckReviewExistenceForBookingQuery,bool>
 {
