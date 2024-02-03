@@ -1,4 +1,5 @@
 ﻿using Domain.Common.Interfaces;
+using Domain.Common.Models;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,18 +17,58 @@ public class RoomRepository : IRoomRepository
         _logger = logger;
     }
 
-    public async Task<IReadOnlyList<Room>> GetAllAsync()
+    private async Task<PaginatedList<Room>> PaginateQueryAsync(IQueryable<Room> query, int pageNumber, int pageSize)
+    {
+        var totalItemCount = await query.CountAsync();
+        var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+
+        var result = await query
+            .Skip(pageSize * (pageNumber - 1))
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return new PaginatedList<Room>(result, pageData);
+    }
+    
+    public async Task<PaginatedList<Room>> GetAllAsync(string? searchQuery, int pageNumber, int pageSize)
     {
         try
         {
-            return await _context
-                .Rooms
-                .AsNoTracking()
-                .ToListAsync();
+            var query = _context.Rooms.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                searchQuery = searchQuery.Trim();
+                query = query.Where(room => room.View.Contains(searchQuery));
+            }
+            return await PaginateQueryAsync(query, pageNumber, pageSize);
         }
         catch (Exception)
         {
-            return Array.Empty<Room>();
+            return new PaginatedList<Room>(new List<Room>(), new PageData(0, 0, 0));
+        }
+    }
+
+    public async Task<PaginatedList<Room>> GetRoomsByHotelIdAsync(Guid hotelId, string? searchQuery, int pageNumber, int pageSize)
+    {
+        try
+        {
+            var query = (from roomType in _context.RoomTypes
+                join room in _context.Rooms on roomType.Id equals room.RoomTypeId
+                where roomType.HotelId == hotelId
+                select room);
+            
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                searchQuery = searchQuery.Trim();
+                query = query.Where(room => room.View.Contains(searchQuery));
+            }
+
+            return await PaginateQueryAsync(query, pageNumber, pageSize);
+        }
+        catch (Exception)
+        {
+            return new PaginatedList<Room>(new List<Room>(), new PageData(0, 0, 0));
         }
     }
 
