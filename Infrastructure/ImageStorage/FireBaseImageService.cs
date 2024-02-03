@@ -119,7 +119,6 @@ public class FireBaseImageService : IImageService
 
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
-
             _logger.LogInformation($"Image with ID {imageId} deleted successfully.");
         }
         catch (NotFoundException)
