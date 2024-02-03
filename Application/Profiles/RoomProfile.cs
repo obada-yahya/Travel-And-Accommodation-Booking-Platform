@@ -10,6 +10,8 @@ public class RoomProfile : Profile
     public RoomProfile()
     {
         CreateMap<Room, RoomDto>();
-        CreateMap<GetRoomsByHotelIdQueryDto, GetRoomsByHotelIdQuery>();
+        
+        // Commands and Queries
+        CreateMap<GetRoomsByHotelIdDto, GetRoomsByHotelIdQuery>();
     }
 }

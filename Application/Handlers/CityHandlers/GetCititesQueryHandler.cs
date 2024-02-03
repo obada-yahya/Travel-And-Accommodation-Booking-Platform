@@ -7,7 +7,8 @@ using MediatR;
 
 namespace Application.Handlers.CityHandlers;
 
-public class GetCitiesQueryHandler : IRequestHandler<GetCitiesQuery, PaginatedList<CityDto>>
+public class GetCitiesQueryHandler :
+IRequestHandler<GetCitiesQuery, PaginatedList<CityDto>>
 {
     private readonly ICityRepository _cityRepository;
     private readonly IMapper _mapper;
