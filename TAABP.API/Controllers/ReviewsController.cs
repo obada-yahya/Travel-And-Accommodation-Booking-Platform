@@ -8,7 +8,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TAABP.API.Validators.ReviewsValidators;
+using TAABP.API.Validators.ReviewValidators;
 
 namespace TAABP.API.Controllers;
 

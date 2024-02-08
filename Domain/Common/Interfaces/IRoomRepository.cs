@@ -1,10 +1,14 @@
-﻿using Domain.Entities;
+﻿using Domain.Common.Models;
+using Domain.Entities;
 
 namespace Domain.Common.Interfaces;
 
 public interface IRoomRepository
 {
-    public Task<IReadOnlyList<Room>> GetAllAsync();
+    public Task<PaginatedList<Room>> 
+    GetAllAsync(string? searchQuery, int pageNumber, int pageSize);
+    public Task<PaginatedList<Room>> 
+    GetRoomsByHotelIdAsync(Guid hotelId, string? searchQuery, int pageNumber, int pageSize);
     public Task<Room?> GetByIdAsync(Guid roomId);
     public Task<Room?> InsertAsync(Room room);
     public Task UpdateAsync(Room room);

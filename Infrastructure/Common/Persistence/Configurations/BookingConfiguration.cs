@@ -14,12 +14,5 @@ public class BookingConfiguration: IEntityTypeConfiguration<Booking>
             .IsRequired()
             .HasForeignKey(booking => booking.RoomId)
             .OnDelete(DeleteBehavior.Cascade);
-        
-        // builder
-        //     .HasOne<User>() 
-        //     .WithMany()
-        //     .IsRequired()
-        //     .HasForeignKey(booking => booking.UserId)
-        //     .OnDelete(DeleteBehavior.Cascade);
     }
 }

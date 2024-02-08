@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.ImageDtos;
 using Domain.Entities;
+using Domain.Exceptions;
 using Firebase.Storage;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
@@ -10,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.ImageStorage;
 
-public class FireBaseImageService : IIMageService
+public class FireBaseImageService : IImageService
 {
     private readonly ApplicationDbContext _context;
     private readonly IConfiguration _configuration;
@@ -97,6 +98,36 @@ public class FireBaseImageService : IIMageService
         catch (Exception)
         {
             return new List<string>();
+        }
+    }
+
+    public async Task DeleteImageAsync(Guid entityId, Guid imageId)
+    {
+        try
+        {
+            var image = await _context.Images
+                .FirstOrDefaultAsync
+                (image => image.Id == imageId && 
+                image.EntityId == entityId);
+            
+            if (image == null)
+                throw new NotFoundException($"Image with ID {imageId} not found");
+
+            var destinationObjectName = $"{image.Id}.{image.Format.ToString().ToLower()}";
+            var storage = new FirebaseStorage(BucketName);
+            await storage.Child(destinationObjectName).DeleteAsync();
+
+            _context.Images.Remove(image);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation($"Image with ID {imageId} deleted successfully.");
+        }
+        catch (NotFoundException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            throw new InvalidOperationException($"Error deleting image with ID {imageId}");
         }
     }
 }

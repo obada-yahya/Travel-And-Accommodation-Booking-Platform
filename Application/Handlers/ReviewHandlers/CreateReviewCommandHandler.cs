@@ -5,7 +5,7 @@ using Domain.Common.Interfaces;
 using Domain.Entities;
 using MediatR;
 
-namespace Application.Handlers.ReviewHandler;
+namespace Application.Handlers.ReviewHandlers;
 
 public class CreateReviewCommandHandler : IRequestHandler<CreateReviewCommand, ReviewDto?>
 {

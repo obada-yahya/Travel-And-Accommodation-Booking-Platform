@@ -27,7 +27,7 @@ services.AddSwaggerGen(setupAction =>
     var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
     setupAction.IncludeXmlComments(xmlCommentsFullPath);
-    setupAction.AddSecurityDefinition("TABBPApiAuth", new OpenApiSecurityScheme()
+    setupAction.AddSecurityDefinition("TAABPApiAuth", new OpenApiSecurityScheme()
     {
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
@@ -40,7 +40,7 @@ services.AddSwaggerGen(setupAction =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "TABBPApiAuth"}
+                    Id = "TAABPApiAuth"}
             },
             new List<string>()
         }

@@ -18,18 +18,4 @@ public class GetAllRoomAmenitiesValidator : GenericValidator<GetAllRoomAmenities
             .LessThan(21)
             .WithMessage("Page Size can't be greater than 20");
     }
-    
-    public async Task<List<ErrorModel>> CheckForValidationErrorsAsync(GetAllRoomAmenitiesQuery request)
-    {
-        var results = Validate(request);
-    
-        return !results.IsValid
-            ? await Task.FromResult(results.Errors.Select(failure =>
-                new ErrorModel
-                {
-                    FieldName = failure.PropertyName,
-                    Message = failure.ErrorMessage
-                }).ToList())
-            : new List<ErrorModel>();
-    }
 }

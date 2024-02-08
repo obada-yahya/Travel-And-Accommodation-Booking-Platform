@@ -1,17 +1,17 @@
-﻿using Application.Queries.ReviewQueries;
+﻿using Application.Queries.HotelQueries;
 using FluentValidation;
 
-namespace TAABP.API.Validators.ReviewsValidators;
+namespace TAABP.API.Validators.HotelValidators;
 
-public class ReviewsQueryValidator : GenericValidator<GetReviewsQuery>
+public class GetAllHotelsValidator : GenericValidator<GetAllHotelsQuery>
 {
-    public ReviewsQueryValidator()
+    public GetAllHotelsValidator()
     {
-        RuleFor(review => review.PageNumber)
+        RuleFor(roomAmenity => roomAmenity.PageNumber)
             .GreaterThan(0)
             .WithMessage("Page number must be greater than 0.");
 
-        RuleFor(review => review.PageSize)
+        RuleFor(roomAmenity => roomAmenity.PageSize)
             .GreaterThan(0)
             .WithMessage("Page size must be greater than 0.")
             .LessThan(21)

@@ -37,18 +37,13 @@ namespace Infrastructure.Common.Persistence.Migrations
                     b.Property<DateTime>("CheckOutDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("GuestId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("RoomId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GuestId");
 
                     b.HasIndex("RoomId");
 
@@ -63,8 +58,8 @@ namespace Infrastructure.Common.Persistence.Migrations
                             BookingDate = new DateTime(2023, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CheckInDate = new DateTime(2023, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CheckOutDate = new DateTime(2023, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GuestId = new Guid("c6c45f7c-2dfe-4c1e-9a9b-8b173c71b32c"),
-                            RoomId = new Guid("a98b8a9d-4c5a-4a90-a2d2-5f1441b93db6")
+                            RoomId = new Guid("a98b8a9d-4c5a-4a90-a2d2-5f1441b93db6"),
+                            UserId = new Guid("c6c45f7c-2dfe-4c1e-9a9b-8b173c71b32c")
                         },
                         new
                         {
@@ -72,8 +67,8 @@ namespace Infrastructure.Common.Persistence.Migrations
                             BookingDate = new DateTime(2023, 1, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CheckInDate = new DateTime(2023, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CheckOutDate = new DateTime(2023, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GuestId = new Guid("aaf21a7d-8fc3-4c9f-8a8e-1eeec8dcd462"),
-                            RoomId = new Guid("4e1cb3d9-bc3b-4997-a3d5-0c56cf17fe7a")
+                            RoomId = new Guid("4e1cb3d9-bc3b-4997-a3d5-0c56cf17fe7a"),
+                            UserId = new Guid("aaf21a7d-8fc3-4c9f-8a8e-1eeec8dcd462")
                         },
                         new
                         {
@@ -81,8 +76,8 @@ namespace Infrastructure.Common.Persistence.Migrations
                             BookingDate = new DateTime(2023, 3, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CheckInDate = new DateTime(2023, 3, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CheckOutDate = new DateTime(2023, 3, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GuestId = new Guid("f44c3eb4-2c8a-4a77-a31b-04c4619aa15a"),
-                            RoomId = new Guid("c6898b7e-ee09-4b36-8b20-22e8c2a63e29")
+                            RoomId = new Guid("c6898b7e-ee09-4b36-8b20-22e8c2a63e29"),
+                            UserId = new Guid("f44c3eb4-2c8a-4a77-a31b-04c4619aa15a")
                         });
                 });
 
@@ -433,9 +428,6 @@ namespace Infrastructure.Common.Persistence.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<Guid?>("HotelId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<float>("Rating")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("real")
@@ -450,8 +442,6 @@ namespace Infrastructure.Common.Persistence.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("HotelId");
 
                     b.HasIndex("RoomTypeId");
 
@@ -623,12 +613,6 @@ namespace Infrastructure.Common.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Booking", b =>
                 {
-                    b.HasOne("Domain.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("GuestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.Room", null)
                         .WithMany()
                         .HasForeignKey("RoomId")
@@ -637,7 +621,9 @@ namespace Infrastructure.Common.Persistence.Migrations
 
                     b.HasOne("Domain.Entities.User", null)
                         .WithMany("Bookings")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.Hotel", b =>
@@ -675,10 +661,6 @@ namespace Infrastructure.Common.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Room", b =>
                 {
-                    b.HasOne("Domain.Entities.Hotel", null)
-                        .WithMany("Rooms")
-                        .HasForeignKey("HotelId");
-
                     b.HasOne("Domain.Entities.RoomType", null)
                         .WithMany()
                         .HasForeignKey("RoomTypeId")
@@ -711,11 +693,6 @@ namespace Infrastructure.Common.Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.City", b =>
                 {
                     b.Navigation("Hotels");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Hotel", b =>
-                {
-                    b.Navigation("Rooms");
                 });
 
             modelBuilder.Entity("Domain.Entities.Owner", b =>

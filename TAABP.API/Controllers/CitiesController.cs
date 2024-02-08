@@ -21,9 +21,9 @@ public class CitiesController : Controller
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
-    private readonly IIMageService _imageService;
+    private readonly IImageService _imageService;
     
-    public CitiesController(IMediator mediator, IMapper mapper, IIMageService imageService)
+    public CitiesController(IMediator mediator, IMapper mapper, IImageService imageService)
     {
         _mediator = mediator;
         _mapper = mapper;
@@ -218,7 +218,8 @@ public class CitiesController : Controller
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAllCitiesPhotos(Guid cityId)
+    [Authorize]
+    public async Task<IActionResult> GetAllCityPhotos(Guid cityId)
     {
         if (!await _mediator.Send(new CheckCityExistsQuery { Id = cityId })) 
             return NotFound($"City with ID {cityId} does not exist");
@@ -242,7 +243,7 @@ public class CitiesController : Controller
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UploadImageAsync(Guid cityId, [FromForm(Name = "Image")] IFormFile file)
+    public async Task<IActionResult> UploadImageForCityAsync(Guid cityId, IFormFile file)
     {
         if (!await _mediator.Send(new CheckCityExistsQuery { Id = cityId })) 
             return NotFound($"City with ID {cityId} does not exist");
@@ -263,7 +264,43 @@ public class CitiesController : Controller
         await _imageService.UploadImageAsync(imageCreationDto);
         return Ok("Image uploaded successfully.");
     }
-
+    
+    /// <summary>
+    /// Deletes an image associated with a city.
+    /// </summary>
+    /// <param name="cityId">The unique identifier of the city.</param>
+    /// <param name="photoId">The unique identifier of the photo to be deleted.</param>
+    /// <returns>
+    /// - 204 No Content: If the image is deleted successfully.
+    /// - 404 Not Found: If the specified city or photo does not exist.
+    /// - 500 Internal Server Error: If an unexpected error occurs.
+    /// </returns>
+    [HttpDelete("{cityId:guid}/photos/{photoId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize(Policy = "MustBeAdmin")]
+    public async Task<IActionResult> DeleteCityImageAsync(Guid cityId, Guid photoId)
+    {
+        try
+        {
+            await _imageService.DeleteImageAsync(cityId, photoId);
+            return NoContent();
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message + $" for City  ID {cityId}.");
+        }
+        catch (InvalidOperationException e)
+        {
+            return StatusCode(500, new 
+            { 
+                error = "Internal Server Error",
+                message = e.Message 
+            });
+        }
+    }
+    
     private ImageFormat? GetImageFormat(string contentType)
     {
         return contentType.ToLower() switch

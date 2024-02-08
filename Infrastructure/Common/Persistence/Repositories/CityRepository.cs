@@ -49,7 +49,9 @@ public class CityRepository : ICityRepository
         }
         catch (Exception)
         {
-            return new PaginatedList<City>(new List<City>(), new PageData(0, 0, 0));
+            return new PaginatedList<City>(
+                new List<City>(),
+                new PageData(0, 0, 0));
         }
     }
 

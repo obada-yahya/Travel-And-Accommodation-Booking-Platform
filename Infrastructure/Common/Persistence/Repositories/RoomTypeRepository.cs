@@ -1,4 +1,5 @@
 ﻿using Domain.Common.Interfaces;
+using Domain.Common.Models;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,26 +9,48 @@ namespace Infrastructure.Common.Persistence.Repositories;
 public class RoomTypeRepository : IRoomTypeRepository
 {
     private readonly ApplicationDbContext _context;
-    private readonly ILogger _logger;
+    private readonly ILogger<RoomTypeRepository> _logger;
 
-    public RoomTypeRepository(ApplicationDbContext context, ILogger logger)
+    public RoomTypeRepository(ApplicationDbContext context, ILogger<RoomTypeRepository> logger)
     {
         _context = context;
         _logger = logger;
     }
 
-    public async Task<IReadOnlyList<RoomType>> GetAllAsync()
+    public async Task<PaginatedList<RoomType>> GetAllAsync(Guid hotelId, bool includeAmenities, int pageNumber, int pageSize)
     {
         try
         {
-            return await _context
+            var query = _context
                 .RoomTypes
+                .Where(roomType => roomType
+                    .HotelId
+                    .Equals(hotelId))
+                .AsQueryable();
+            
+            var totalItemCount = await query.CountAsync();
+            var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+            
+            if (includeAmenities)
+            {
+                query = query.
+                    Include(roomCategory =>
+                    roomCategory.Amenities);
+            }
+
+            var result = query
+                .Skip(pageSize * (pageNumber - 1))
+                .Take(pageSize)
                 .AsNoTracking()
-                .ToListAsync();
+                .ToList();
+
+            return new PaginatedList<RoomType>(result, pageData);
         }
         catch (Exception)
         {
-            return Array.Empty<RoomType>();
+            return new PaginatedList<RoomType>(
+                new List<RoomType>(),
+                new PageData(0, 0, 0));
         }
     }
 
@@ -72,6 +95,12 @@ public class RoomTypeRepository : IRoomTypeRepository
         var roomTypeToRemove = new RoomType { Id = roomTypeId };
         _context.RoomTypes.Remove(roomTypeToRemove);
         await SaveChangesAsync();
+    }
+
+    public async Task<bool> CheckRoomTypeExistenceForHotel(Guid hotelId, Guid roomTypeId)
+    {
+        return (await GetByIdAsync(roomTypeId))
+               .HotelId.Equals(hotelId);
     }
 
     public async Task SaveChangesAsync()

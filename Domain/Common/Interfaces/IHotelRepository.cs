@@ -1,14 +1,17 @@
-﻿using Domain.Entities;
+﻿using Domain.Common.Models;
+using Domain.Entities;
 
 namespace Domain.Common.Interfaces;
 
 public interface IHotelRepository
 {
-    public Task<IReadOnlyList<Hotel>> GetAllAsync();
+    public Task<PaginatedList<Hotel>> 
+    GetAllAsync(string? searchQuery, int pageNumber, int pageSize);
     public Task<Hotel?> GetByIdAsync(Guid hotelId);
-    Task<Hotel?> InsertAsync(Hotel hotel);
-    Task UpdateAsync(Hotel hotel);
-    Task DeleteAsync(Guid hotelId);
-    Task SaveChangesAsync();
-    Task<bool> IsExistsAsync(Guid hotelId);
+    public Task<Hotel?> InsertAsync(Hotel hotel);
+    public Task UpdateAsync(Hotel hotel);
+    public Task DeleteAsync(Guid hotelId);
+    public Task<List<Room>> GetHotelAvailableRoomsAsync(Guid hotelId, DateTime checkInDate, DateTime checkOutDate);
+    public Task SaveChangesAsync();
+    public Task<bool> IsExistsAsync(Guid hotelId);
 }
