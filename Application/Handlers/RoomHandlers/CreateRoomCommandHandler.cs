@@ -34,7 +34,6 @@ public class CreateRoomCommandHandler : IRequestHandler<CreateRoomCommand, RoomD
         if (!await _roomTypeRepository
             .CheckRoomTypeExistenceForHotel(request.HotelId, request.RoomTypeId))
             throw new NotFoundException("The specified room category does not exist for the given hotel.");
-
         
         var roomToAdd = _mapper.Map<Room>(request);
         var addedRoom = await _roomRepository.InsertAsync(roomToAdd);
