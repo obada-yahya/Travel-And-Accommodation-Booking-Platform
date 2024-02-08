@@ -15,6 +15,7 @@ public interface IRoomTypeRepository
     Task<RoomType?> InsertAsync(RoomType roomType);
     Task UpdateAsync(RoomType roomType);
     Task DeleteAsync(Guid roomTypeId);
+    Task<bool> CheckRoomTypeExistenceForHotel(Guid hotelId, Guid roomTypeId);
     Task SaveChangesAsync();
     Task<bool> IsExistsAsync(Guid roomTypeId);
 }

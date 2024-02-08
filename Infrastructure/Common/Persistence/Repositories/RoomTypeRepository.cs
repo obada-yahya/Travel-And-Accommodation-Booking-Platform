@@ -21,7 +21,13 @@ public class RoomTypeRepository : IRoomTypeRepository
     {
         try
         {
-            var query = _context.RoomTypes.AsQueryable();
+            var query = _context
+                .RoomTypes
+                .Where(roomType => roomType
+                    .HotelId
+                    .Equals(hotelId))
+                .AsQueryable();
+            
             var totalItemCount = await query.CountAsync();
             var pageData = new PageData(totalItemCount, pageSize, pageNumber);
             
@@ -89,6 +95,12 @@ public class RoomTypeRepository : IRoomTypeRepository
         var roomTypeToRemove = new RoomType { Id = roomTypeId };
         _context.RoomTypes.Remove(roomTypeToRemove);
         await SaveChangesAsync();
+    }
+
+    public async Task<bool> CheckRoomTypeExistenceForHotel(Guid hotelId, Guid roomTypeId)
+    {
+        return (await GetByIdAsync(roomTypeId))
+               .HotelId.Equals(hotelId);
     }
 
     public async Task SaveChangesAsync()
