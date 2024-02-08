@@ -1,5 +1,4 @@
-﻿using System.Data;
-using Application.DTOs.HotelDtos;
+﻿using Application.DTOs.HotelDtos;
 using FluentValidation;
 
 namespace TAABP.API.Validators.HotelValidators;

@@ -1,7 +1,7 @@
 ﻿using Application.DTOs.ReviewsDtos;
 using FluentValidation;
 
-namespace TAABP.API.Validators.ReviewsValidators;
+namespace TAABP.API.Validators.ReviewValidators;
 
 public class CreateReviewValidator : GenericValidator<ReviewForCreationDto>
 {

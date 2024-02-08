@@ -1,7 +1,7 @@
 ﻿using Application.Queries.ReviewQueries;
 using FluentValidation;
 
-namespace TAABP.API.Validators.ReviewsValidators;
+namespace TAABP.API.Validators.ReviewValidators;
 
 public class ReviewsQueryValidator : GenericValidator<GetReviewsQuery>
 {
