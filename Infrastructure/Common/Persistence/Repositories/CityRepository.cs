@@ -120,6 +120,26 @@ public class CityRepository : ICityRepository
         await SaveChangesAsync();
     }
 
+    public async Task<List<City>> GetTrendingCitiesAsync(int count)
+    {
+        var trendingCitiesId = await (from booking in _context.Bookings
+                join room in _context.Rooms on booking.RoomId equals room.Id
+                join roomType in _context.RoomTypes on room.RoomTypeId equals roomType.Id
+                join hotel in _context.Hotels on roomType.HotelId equals hotel.Id
+                join city in _context.Cities on hotel.CityId equals city.Id
+                group city by city.Id into groupedCities
+                orderby groupedCities.Count() descending
+                select groupedCities.Key)
+            .Take(count)
+            .ToListAsync();
+        
+        var trendingCities = await _context.Cities
+            .Where(city => trendingCitiesId.Contains(city.Id))
+            .ToListAsync();
+        
+        return trendingCities.OrderBy(city => trendingCitiesId.IndexOf(city.Id)).ToList();
+    }
+
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
