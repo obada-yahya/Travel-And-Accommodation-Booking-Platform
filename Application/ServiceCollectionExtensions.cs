@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(typeof(RoomAmenityProfile));
         services.AddAutoMapper(typeof(ReviewProfile));
         services.AddAutoMapper(typeof(RoomProfile));
+        services.AddAutoMapper(typeof(DiscountProfile));
         
         return services;
     }

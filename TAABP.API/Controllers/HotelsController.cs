@@ -397,7 +397,7 @@ public class HotelsController : Controller
     /// - 404 Not Found: If the hotel with the given ID does not exist.
     /// - 500 Internal Server Error: If an unexpected error occurs.
     /// </returns>
-    [HttpGet("{hotelId:guid}/room-categories")]
+    [HttpGet("{hotelId:guid}/room-types")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -406,7 +406,7 @@ public class HotelsController : Controller
     [FromQuery] GetRoomCategoriesByHotelIdDto categoriesByHotelIdDto)
     {
         if (!await _mediator.Send(new CheckHotelExistsQuery { Id = hotelId })) 
-            return NotFound($"Hotel with ID {hotelId} does not exist");
+            return NotFound($"Hotel with ID {hotelId} doesn't exist");
         
         var hotelQuery = _mapper.Map<GetRoomCategoriesByHotelIdQuery>(categoriesByHotelIdDto);
         hotelQuery.HotelId = hotelId;

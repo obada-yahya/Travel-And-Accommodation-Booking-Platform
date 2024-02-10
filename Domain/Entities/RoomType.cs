@@ -9,4 +9,5 @@ public class RoomType
     public RoomCategory Category { get; set; }
     public float PricePerNight { get; set; }
     public IList<RoomAmenity> Amenities { get; set; }
+    public IList<Discount> Discounts { get; set; }
 }
