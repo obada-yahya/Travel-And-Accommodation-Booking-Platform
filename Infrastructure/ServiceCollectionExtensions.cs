@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IHotelRepository, HotelRepository>();
         services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
+        services.AddScoped<IDiscountRepository, DiscountRepository>();
         
         return services;
     }
