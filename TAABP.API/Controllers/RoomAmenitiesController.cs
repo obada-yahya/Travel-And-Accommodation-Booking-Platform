@@ -107,9 +107,9 @@ public class RoomAmenitiesController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DeleteRoomAmenityAsync(Guid roomAmenityId)
     {
-        var deleteRoomAmenityCommand = new DeleteRoomAmenityCommand { Id = roomAmenityId };
         try
         {
+            var deleteRoomAmenityCommand = new DeleteRoomAmenityCommand { Id = roomAmenityId };
             await _mediator.Send(deleteRoomAmenityCommand);
             return NoContent();
         }
