@@ -25,5 +25,6 @@ public class HotelProfile : Profile
         CreateMap<UpdateHotelCommand, Hotel>();
         CreateMap<GetHotelAvailableRoomsDto, GetHotelAvailableRoomsQuery>();
         CreateMap<HotelSearchQuery, HotelSearchParameters>();
+        CreateMap<FeaturedDeal, FeaturedDealDto>();
     }
 }
