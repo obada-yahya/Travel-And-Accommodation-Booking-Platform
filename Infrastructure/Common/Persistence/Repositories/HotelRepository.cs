@@ -189,12 +189,34 @@ public class HotelRepository : IHotelRepository
         return new PaginatedList<HotelSearchResult>(result, pageData);
     }
 
+    public async Task<List<FeaturedDeal>> GetFeaturedDealsAsync(int count)
+    {
+        return (await (from city in _context.Cities
+            join hotel in _context.Hotels on city.Id equals hotel.CityId
+            join roomType in _context.RoomTypes on hotel.Id equals roomType.HotelId
+            let activeDiscount = GetActiveDiscount(roomType.Discounts)
+            select new FeaturedDeal
+            {
+                CityName = city.Name,
+                HotelId = hotel.Id,
+                HotelName = hotel.Name,
+                HotelRating = hotel.Rating,
+                BaseRoomPrice = roomType.PricePerNight,
+                RoomClassId = roomType.Id,
+                Discount = activeDiscount,
+                FinalRoomPrice = roomType.PricePerNight * (1 - activeDiscount)
+            }).ToListAsync())
+            .OrderByDescending(d => d.Discount)
+            .ThenBy(d => d.FinalRoomPrice)
+            .Take(count).ToList();
+    }
+
     private static float GetActiveDiscount(IEnumerable<Discount> roomType)
     {
         return roomType
                .FirstOrDefault(discount =>
-                   discount.FromDate <= DateTime.Today.Date && 
-                   discount.ToDate >= DateTime.Today.Date)
+                   discount.FromDate.Date <= DateTime.Today.Date && 
+                   discount.ToDate.Date >= DateTime.Today.Date)
                    ?.DiscountPercentage ?? 0.0f;
     }
 
@@ -204,9 +226,8 @@ public class HotelRepository : IHotelRepository
             where room.AdultsCapacity == adults &&
                   room.ChildrenCapacity == children &&
                   _context.Bookings.Where(booking => booking.RoomId == room.Id).All
-                  (booking => checkInDate.Date > booking.CheckOutDate.Date ||
-                              checkOutDate.Date < booking.CheckInDate.Date) 
-                  select room;
+                  (booking => checkInDate.Date > booking.CheckOutDate.Date || 
+                  checkOutDate.Date < booking.CheckInDate.Date) select room;
     }
 
     public async Task SaveChangesAsync()
