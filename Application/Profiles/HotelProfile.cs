@@ -1,8 +1,10 @@
 ﻿using Application.Commands.HotelCommands;
 using Application.DTOs.HotelDtos;
 using Application.DTOs.RoomDtos;
+using Application.Queries.CityQueries;
 using Application.Queries.HotelQueries;
 using AutoMapper;
+using Domain.Common.Models;
 using Domain.Entities;
 
 namespace Application.Profiles;
@@ -22,5 +24,6 @@ public class HotelProfile : Profile
         CreateMap<HotelForUpdateDto, UpdateHotelCommand>();
         CreateMap<UpdateHotelCommand, Hotel>();
         CreateMap<GetHotelAvailableRoomsDto, GetHotelAvailableRoomsQuery>();
+        CreateMap<HotelSearchQuery, HotelSearchParameters>();
     }
 }
