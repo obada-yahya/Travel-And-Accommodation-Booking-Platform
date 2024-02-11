@@ -7,6 +7,9 @@ public interface IBookingRepository
 { 
     public Task<PaginatedList<Booking>> 
     GetAllByHotelIdAsync(Guid hotelId, int pageNumber, int pageSize);
+    public Task<bool> CanBookRoom(Guid roomId,
+        DateTime proposedCheckIn,
+        DateTime proposedCheckOut);
     public Task<Booking?> GetByIdAsync(Guid bookingId);
     public Task<Booking?> InsertAsync(Booking booking);
     public Task UpdateAsync(Booking booking);

@@ -51,7 +51,7 @@ public class BookingRepository : IBookingRepository
         }
     }
 
-    private async Task<bool> CanBookRoom(Guid roomId, DateTime proposedCheckIn, DateTime proposedCheckOut)
+    public async Task<bool> CanBookRoom(Guid roomId, DateTime proposedCheckIn, DateTime proposedCheckOut)
     {
         var roomBookings = await _context
             .Bookings

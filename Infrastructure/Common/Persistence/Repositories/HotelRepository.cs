@@ -137,6 +137,77 @@ public class HotelRepository : IHotelRepository
             checkInDate,
             checkOutDate)).ToList();
     }
+    
+    public async Task<PaginatedList<HotelSearchResult>> HotelSearchAsync(HotelSearchParameters searchParams)
+    {
+
+        var cityFilterQuery = _context.Cities.AsQueryable();
+
+        if (searchParams.CityName is not null)
+        {
+            cityFilterQuery = cityFilterQuery
+                .Where(city => city
+                    .Name.ToLower()
+                    .Contains(searchParams.CityName.Trim().ToLower()));
+        }
+        
+        var roomFilterQuery = FindAvailableRoomsWithCapacity(
+            searchParams.Adults,
+            searchParams.Children,
+            searchParams.CheckInDate,
+            searchParams.CheckOutDate);
+
+        var hotelFilterQuery = from hotel in _context.Hotels
+            where hotel.Rating >= searchParams.StarRate select hotel;
+
+        var query = from city in cityFilterQuery
+            join hotel in hotelFilterQuery on city.Id equals hotel.CityId
+            join roomType in _context.RoomTypes on hotel.Id equals roomType.HotelId
+            join room in roomFilterQuery on roomType.Id equals room.RoomTypeId
+            select new HotelSearchResult
+            {
+                CityId = city.Id,
+                CityName = city.Name,
+                HotelId = hotel.Id,
+                HotelName = hotel.Name,
+                Rating = hotel.Rating,
+                RoomId = room.Id,
+                RoomPricePerNight = roomType.PricePerNight,
+                Discount = GetActiveDiscount(roomType.Discounts),
+                RoomType = roomType.Category.ToString()
+            };
+        
+        var totalItemCount = await query.CountAsync();
+        var pageData = new PageData(totalItemCount, searchParams.PageSize, searchParams.PageNumber);
+        
+        var result = await query
+            .Skip(searchParams.PageSize * (searchParams.PageNumber - 1))
+            .Take(searchParams.PageSize)
+            .AsNoTracking()
+            .ToListAsync();
+        
+        return new PaginatedList<HotelSearchResult>(result, pageData);
+    }
+
+    private static float GetActiveDiscount(IEnumerable<Discount> roomType)
+    {
+        return roomType
+               .FirstOrDefault(discount =>
+                   discount.FromDate <= DateTime.Today.Date && 
+                   discount.ToDate >= DateTime.Today.Date)
+                   ?.DiscountPercentage ?? 0.0f;
+    }
+
+    private IQueryable<Room> FindAvailableRoomsWithCapacity(int adults, int children, DateTime checkInDate, DateTime checkOutDate)
+    {
+        return from room in _context.Rooms
+            where room.AdultsCapacity == adults &&
+                  room.ChildrenCapacity == children &&
+                  _context.Bookings.Where(booking => booking.RoomId == room.Id).All
+                  (booking => checkInDate.Date > booking.CheckOutDate.Date ||
+                              checkOutDate.Date < booking.CheckInDate.Date) 
+                  select room;
+    }
 
     public async Task SaveChangesAsync()
     {
