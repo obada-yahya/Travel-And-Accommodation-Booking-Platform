@@ -23,6 +23,9 @@ public class HomeController : Controller
     /// </summary>
     /// <returns>The top 5 trending cities.</returns>
     [HttpGet("destinations/trending")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
     public async Task<IActionResult> GetTrendingCities()
     {
@@ -36,6 +39,10 @@ public class HomeController : Controller
     /// <param name="query">The hotel search query.</param>
     /// <returns>A list of hotels matching the search criteria.</returns>
     [HttpGet("search")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
     public async Task<IActionResult> Search([FromQuery] HotelSearchQuery query)
     {
@@ -52,6 +59,9 @@ public class HomeController : Controller
     /// </summary>
     /// <returns>The top 5 featured hotel deals.</returns>
     [HttpGet("featured-deals")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
     public async Task<IActionResult> FeaturedDeals()
     {
