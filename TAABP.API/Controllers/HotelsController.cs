@@ -348,6 +348,35 @@ public class HotelsController : Controller
     }
 
     /// <summary>
+    /// Retrieves a room from the specified hotel by its unique identifier.
+    /// </summary>
+    /// <param name="hotelId">The unique identifier of the hotel.</param>
+    /// <param name="roomId">The unique identifier of the room.</param>
+    /// <returns>
+    /// Returns a response with the room details if the room exists and belongs to the specified hotel,
+    /// otherwise returns a 404 Not Found response if the hotel or room does not exist or the room does not belong to the hotel,
+    /// or a 500 Internal Server Error response if an unexpected error occurs.
+    /// </returns>
+    [HttpGet("{hotelId:guid}/rooms/{roomId:guid}", Name = "GetRoom")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize]
+    public async Task<IActionResult> GetRoomByIdAndHotelIdAsync(Guid hotelId, Guid roomId)
+    {
+        if (!await _mediator.Send(new CheckHotelExistsQuery { Id = hotelId })) 
+            return NotFound($"Hotel with ID {hotelId} doesn't exist");
+        
+        if(!await _mediator.Send(new CheckRoomBelongsToHotelQuery{HotelId = hotelId, RoomId = roomId}))
+            return NotFound("The room doesn't belong to the hotel.");
+        
+        var request = new GetRoomByIdQuery{ RoomId = roomId };
+        var result = await _mediator.Send(request);
+        if (result is null) return NotFound();
+        return Ok(result);
+    }
+    
+    /// <summary>
     /// Creates a new room for a specific hotel based on its unique identifier (GUID).
     /// </summary>
     /// <param name="hotelId">The unique identifier of the hotel.</param>
@@ -360,7 +389,8 @@ public class HotelsController : Controller
     /// </returns>
     [HttpPost("{hotelId}/rooms")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize(Policy = "MustBeAdmin")]
@@ -379,7 +409,9 @@ public class HotelsController : Controller
             var createdRoom = await _mediator.Send(request);
             if (createdRoom is null) return BadRequest();
             
-            return Ok("OKAY!!!");
+            return CreatedAtRoute("GetRoom", 
+                new {roomId = createdRoom.Id},
+                createdRoom);
         }
         catch (NotFoundException e)
         {
