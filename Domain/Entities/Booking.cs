@@ -8,6 +8,7 @@ public class Booking
     public DateTime CheckInDate{ get;  set; }
     public DateTime CheckOutDate{ get; set; }
     public DateTime BookingDate { get; set; }
+    public double Price { get; set; }
     public Review? Review { get; set; }
     public Payment? Payment { get;  set; }
 }
