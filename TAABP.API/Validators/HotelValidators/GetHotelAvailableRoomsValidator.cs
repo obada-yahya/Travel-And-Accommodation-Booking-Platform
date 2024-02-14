@@ -11,8 +11,8 @@ public class GetHotelAvailableRoomsValidator : GenericValidator<GetHotelAvailabl
             .GreaterThan(DateTime.Today)
             .WithMessage("Check-in must be in the future.");
 
-        RuleFor(booking => booking.CheckOutDate)
-            .GreaterThanOrEqualTo(booking => booking.CheckInDate.AddDays(1))
+        RuleFor(room => room.CheckOutDate)
+            .GreaterThanOrEqualTo(room => room.CheckInDate.AddDays(1))
             .WithMessage("Check-out must be at least one day after check-in.");
     }
 }

@@ -112,7 +112,7 @@ public class CityRepository : ICityRepository
             throw new InvalidOperationException("Error Occured while updating city.");
         }
     }
-
+    
     public async Task DeleteAsync(Guid cityId)
     {
         var cityToRemove = new City { Id = cityId };
@@ -139,7 +139,7 @@ public class CityRepository : ICityRepository
         
         return trendingCities.OrderBy(city => trendingCitiesId.IndexOf(city.Id)).ToList();
     }
-
+    
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
