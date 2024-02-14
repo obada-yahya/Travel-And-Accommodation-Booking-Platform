@@ -14,7 +14,9 @@ public class DiscountRepository : IDiscountRepository
         _context = context;
     }
 
-    public async Task<PaginatedList<Discount>> GetAllByRoomTypeIdAsync(Guid roomTypeId, int pageNumber, int pageSize)
+    public async Task<PaginatedList<Discount>> GetAllByRoomTypeIdAsync(Guid roomTypeId,
+        int pageNumber,
+        int pageSize)
     {
         try
         {
@@ -35,7 +37,8 @@ public class DiscountRepository : IDiscountRepository
         }
         catch (Exception)
         {
-            return new PaginatedList<Discount>(new List<Discount>(), new PageData(0, 0, 0));
+            return new PaginatedList<Discount>(new List<Discount>(),
+            new PageData(0, 0, 0));
         }
     }
 
@@ -44,6 +47,17 @@ public class DiscountRepository : IDiscountRepository
         return await _context
             .Discounts
             .SingleAsync(discount => discount.Id.Equals(discountId));
+    }
+
+    public async Task<bool> HasOverlappingDiscountAsync(Guid roomTypeId, 
+        DateTime fromDate,
+        DateTime toDate)
+    {
+        return await _context.Discounts.Where(discount =>
+                discount.RoomTypeId.Equals(roomTypeId))
+                .AnyAsync(discount =>
+                    discount.FromDate.Date <= toDate.Date && 
+                    discount.ToDate.Date >= fromDate.Date);
     }
 
     public async Task<Discount?> InsertAsync(Discount discount)

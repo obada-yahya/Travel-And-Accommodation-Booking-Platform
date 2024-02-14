@@ -13,7 +13,7 @@ public class CreateRoomTypeValidator : GenericValidator<CreateDiscountCommand>
         RuleFor(discount => discount.DiscountPercentage)
             .InclusiveBetween(0.0f, 1.0f)
             .WithMessage("Discount must be between 0.0 and 1.0");
-        
+
         RuleFor(discount => discount.FromDate)
             .NotEmpty()
             .WithMessage("FromDate field shouldn't be empty");

@@ -18,8 +18,7 @@ public class BookingRepository : IBookingRepository
         _logger = logger;
     }
 
-    public async Task<PaginatedList<Booking>> GetAllByHotelIdAsync(
-        Guid hotelId,
+    public async Task<PaginatedList<Booking>> GetAllByHotelIdAsync(Guid hotelId,
         int pageNumber,
         int pageSize)
     {
@@ -47,7 +46,8 @@ public class BookingRepository : IBookingRepository
         }
         catch (Exception)
         {
-            return new PaginatedList<Booking>(new List<Booking>(), new PageData(0, 0, 0));
+            return new PaginatedList<Booking>(new List<Booking>(),
+            new PageData(0, 0, 0));
         }
     }
 
