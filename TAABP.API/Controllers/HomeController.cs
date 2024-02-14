@@ -4,6 +4,7 @@ using Application.Queries.HotelQueries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TAABP.API.Validators.HomeValidators;
 
 namespace TAABP.API.Controllers;
 
@@ -46,8 +47,11 @@ public class HomeController : Controller
     [Authorize]
     public async Task<IActionResult> Search([FromQuery] HotelSearchQuery query)
     {
-        var result = await _mediator.Send(query);
+        var validators = new HotelSearchQueryValidator();
+        var errors = await validators.CheckForValidationErrorsAsync(query);
+        if (errors.Count > 0) return BadRequest(errors);
         
+        var result = await _mediator.Send(query);
         Response.Headers.Add("X-Pagination",
             JsonSerializer.Serialize(result.PageData));
         
