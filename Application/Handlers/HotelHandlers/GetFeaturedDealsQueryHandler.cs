@@ -2,7 +2,6 @@
 using Application.Queries.HotelQueries;
 using AutoMapper;
 using Domain.Common.Interfaces;
-using Domain.Common.Models;
 using MediatR;
 
 namespace Application.Handlers.HotelHandlers;
