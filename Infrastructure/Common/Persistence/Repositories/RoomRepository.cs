@@ -97,6 +97,24 @@ public class RoomRepository : IRoomRepository
         return null;
     }
 
+    public async Task<float> GetPriceForRoomWithDiscount(Guid roomId)
+    {
+        return await (from room in _context.Rooms
+                where room.Id == roomId
+                join roomType in _context.RoomTypes on room.RoomTypeId equals roomType.Id
+                select roomType.PricePerNight * (1 - GetActiveDiscount(roomType.Discounts))
+            ).SingleAsync();
+    }
+
+    private static float GetActiveDiscount(IEnumerable<Discount> roomType)
+    {
+        return roomType
+            .FirstOrDefault(discount =>
+                discount.FromDate.Date <= DateTime.Today.Date && 
+                discount.ToDate.Date >= DateTime.Today.Date)
+            ?.DiscountPercentage ?? 0.0f;
+    }
+    
     public async Task<Room?> InsertAsync(Room room)
     {
         try
