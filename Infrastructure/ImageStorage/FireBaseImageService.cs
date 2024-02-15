@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.ImageDtos;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Exceptions;
 using Firebase.Storage;
 using Google.Apis.Auth.OAuth2;
@@ -62,29 +63,66 @@ public class FireBaseImageService : IImageService
     
     public async Task UploadImageAsync(ImageCreationDto imageCreationDto)
     {
+        await UploadImageAsyncInternal(imageCreationDto);
+    }
+
+    public async Task UploadThumbnailAsync(ImageCreationDto imageCreationDto)
+    {
+        var thumbnail = await _context
+            .Images
+            .SingleOrDefaultAsync(e => e.Type == ImageType.Thumbnail && e.EntityId.Equals(imageCreationDto.EntityId));
+        
+        if (thumbnail is not null)
+        {
+            await DeleteThumbnailAsync(thumbnail.Id, thumbnail.Format.ToString().ToLower());
+            await UploadImageAsyncInternal(imageCreationDto, thumbnail.Id);
+        }
+        else
+        {
+            await UploadImageAsync(imageCreationDto);
+        }
+    }
+
+    private async Task UploadImageAsyncInternal(ImageCreationDto imageCreationDto, Guid? id = null)
+    {
         var credentialsPath = GetCredentialsFilePath();
         var image = new Image
         {
-            Id = Guid.NewGuid(),
+            Id = id ?? Guid.NewGuid(),
             Format = imageCreationDto.Format,
-            EntityId = imageCreationDto.EntityId
+            EntityId = imageCreationDto.EntityId,
+            Type = imageCreationDto.Type
         };
-        var format = image.Format.ToString().ToLower();
+        
+        var formatToUse = image.Format;
+        var formatString = formatToUse.ToString().ToLower();
         var imageBytes = Convert.FromBase64String(imageCreationDto.Base64Content);
         
         var credential = GoogleCredential.FromFile(credentialsPath);
         var storage = await StorageClient.CreateAsync(credential);
-        var destinationObjectName = $"{image.Id}.{format}";
-        var contentType = GetContentType(format);
+        var destinationObjectName = $"{image.Id}.{formatString}";
+        var contentType = GetContentType(formatString);
         
         using var uploadStream = new MemoryStream(imageBytes);
         
         storage.UploadObject(BucketName, destinationObjectName, contentType, uploadStream);
         image.Url = await GetImagePublicUrl(destinationObjectName);
-        await AddImageAsync(image);
+        
+        if (id is not null)
+        {
+            var existingImage = await _context.Images.FindAsync(id);
+            existingImage.Url = image.Url;
+            existingImage.Format = image.Format;
+        }
+        else
+        {
+            await AddImageAsync(image);
+        }
+        
+        await _context.SaveChangesAsync();
         _logger.LogInformation("Image uploaded successfully.");
     }
-
+    
     public async Task<List<string>> GetAllImagesAsync(Guid entityId)
     {
         try
@@ -119,6 +157,25 @@ public class FireBaseImageService : IImageService
 
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
+            _logger.LogInformation($"Image with ID {imageId} deleted successfully.");
+        }
+        catch (NotFoundException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            throw new InvalidOperationException($"Error deleting image with ID {imageId}");
+        }
+    }
+    
+    private async Task DeleteThumbnailAsync(Guid imageId, string format)
+    {
+        try
+        {
+            var destinationObjectName = $"{imageId}.{format}";
+            var storage = new FirebaseStorage(BucketName);
+            await storage.Child(destinationObjectName).DeleteAsync();
             _logger.LogInformation($"Image with ID {imageId} deleted successfully.");
         }
         catch (NotFoundException)

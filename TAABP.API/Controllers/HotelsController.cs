@@ -258,7 +258,7 @@ public class HotelsController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
     [Authorize(Policy = "MustBeAdmin")]
-    public async Task<IActionResult> UploadeImageForHotelAsync(Guid hotelId, IFormFile file)
+    public async Task<IActionResult> UploadImageForHotelAsync(Guid hotelId, IFormFile file)
     {
         if (!await _mediator.Send(new CheckHotelExistsQuery { Id = hotelId })) 
             return NotFound($"Hotel with ID {hotelId} does not exist");

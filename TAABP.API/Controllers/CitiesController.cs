@@ -239,10 +239,11 @@ public class CitiesController : Controller
     /// - 400 Bad Request: If the image format is not supported.
     /// - 500 Internal Server Error: If an unexpected error occurs during the operation.
     /// </returns>
-    [HttpPost("{cityId:guid}/photos")]
+    [HttpPost("{cityId:guid}/gallery")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize("MustBeAdmin")]
     public async Task<IActionResult> UploadImageForCityAsync(Guid cityId, IFormFile file)
     {
         if (!await _mediator.Send(new CheckCityExistsQuery { Id = cityId })) 
@@ -258,10 +259,35 @@ public class CitiesController : Controller
         {
             EntityId = cityId,
             Base64Content = base64Content,
-            Format = imageFormat.Value
+            Format = imageFormat.Value,
         };
         
         await _imageService.UploadImageAsync(imageCreationDto);
+        return Ok("Image uploaded successfully.");
+    }
+
+    [HttpPut("{cityId:guid}/thumbnail")]
+    [Authorize("MustBeAdmin")]
+    public async Task<IActionResult> UploadThumbnailForCityAsync(Guid cityId, IFormFile file)
+    {
+        if (!await _mediator.Send(new CheckCityExistsQuery { Id = cityId })) 
+            return NotFound($"City with ID {cityId} does not exist");
+        
+        using var memoryStream = new MemoryStream();
+        await file.CopyToAsync(memoryStream);
+        var base64Content = Convert.ToBase64String(memoryStream.ToArray());
+        var imageFormat = GetImageFormat(file.ContentType);
+        if (imageFormat == null) return BadRequest($"The {imageFormat} format are not supported");
+        
+        var imageCreationDto = new ImageCreationDto
+        {
+            EntityId = cityId,
+            Base64Content = base64Content,
+            Format = imageFormat.Value,
+            Type = ImageType.Thumbnail
+        };
+        
+        await _imageService.UploadThumbnailAsync(imageCreationDto);
         return Ok("Image uploaded successfully.");
     }
     
