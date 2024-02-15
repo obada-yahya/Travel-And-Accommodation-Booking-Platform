@@ -10,7 +10,7 @@ using TAABP.API.Validators.AuthValidators;
 namespace TAABP.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/authentication")]
 public class AuthenticationController : Controller
 {
     private readonly IConfiguration _configuration;
@@ -34,7 +34,7 @@ public class AuthenticationController : Controller
     /// <returns>
     /// If successful, returns the generated JWT token; otherwise, returns a list of validation errors or unauthorized status.
     /// </returns>
-    [HttpPost("SignIn")]
+    [HttpPost("sign-In")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -53,8 +53,7 @@ public class AuthenticationController : Controller
         var secretKey = _configuration["Authentication:SecretForKey"];
         var issuer = _configuration["Authentication:Issuer"];
         var audience = _configuration["Authentication:Audience"];
-        var token = await _tokenGenerator
-                               .GenerateToken(
+        var token = await _tokenGenerator.GenerateToken(
                                    user.Email,
                                    authenticationRequestBody.Password,
                                    secretKey,
@@ -68,7 +67,7 @@ public class AuthenticationController : Controller
     /// </summary>
     /// <param name="appUserForCreationDto">User registration details.</param>
     /// <returns>An action result indicating success or failure of the registration process.</returns>
-    [HttpPost("Register")]
+    [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<string>> Register(
