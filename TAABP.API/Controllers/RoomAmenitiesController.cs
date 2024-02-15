@@ -14,6 +14,7 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("api/room-amenities")]
+[ApiVersion("1.0")]
 public class RoomAmenitiesController : Controller
 {
     private readonly IMediator _mediator;

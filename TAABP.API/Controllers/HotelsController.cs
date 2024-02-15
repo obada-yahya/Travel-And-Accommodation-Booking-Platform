@@ -3,7 +3,6 @@ using Application.Commands.HotelCommands;
 using Application.Commands.RoomCommands;
 using Application.DTOs.BookingDtos;
 using Application.DTOs.HotelDtos;
-using Application.DTOs.ImageDtos;
 using Application.DTOs.RoomCategoriesDtos;
 using Application.DTOs.RoomDtos;
 using Application.Queries.BookingQueries;
@@ -26,6 +25,7 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("/api/hotels")]
+[ApiVersion("1.0")]
 public class HotelsController : Controller
 {
     private readonly IMediator _mediator;

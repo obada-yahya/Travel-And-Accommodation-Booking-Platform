@@ -15,6 +15,7 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("api/guests")]
+[ApiVersion("1.0")]
 public class GuestsController : Controller
 {
     private readonly IMediator _mediator;

@@ -10,6 +10,7 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("api/home")]
+[ApiVersion("1.0")]
 public class HomeController : Controller
 {
     private readonly IMediator _mediator;

@@ -11,6 +11,7 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("api/authentication")]
+[ApiVersion("1.0")]
 public class AuthenticationController : Controller
 {
     private readonly IConfiguration _configuration;

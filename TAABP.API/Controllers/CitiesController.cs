@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 using Application.Commands.CityCommands;
 using Application.DTOs.CityDtos;
-using Application.DTOs.ImageDtos;
 using Application.Queries.CityQueries;
 using AutoMapper;
 using Domain.Enums;
@@ -18,6 +17,7 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("api/cities")]
+[ApiVersion("1.0")]
 public class CitiesController : Controller
 {
     private readonly IMediator _mediator;

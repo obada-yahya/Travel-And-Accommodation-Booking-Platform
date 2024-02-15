@@ -14,6 +14,7 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("/api/reviews")]
+[ApiVersion("1.0")]
 public class ReviewsController : Controller
 {
     private readonly IMediator _mediator;
