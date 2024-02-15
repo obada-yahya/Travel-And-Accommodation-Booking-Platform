@@ -25,10 +25,21 @@ public class RoomTypesController : Controller
         _mapper = mapper;
     }
     
+    /// <summary>
+    /// Retrieves all discounts associated with a room type based on its unique identifier (GUID).
+    /// </summary>
+    /// <param name="roomTypeId">The unique identifier of the room type.</param>
+    /// <param name="allRoomTypeDiscountsDto">Query parameters for filtering discounts.</param>
+    /// <returns>
+    /// - 200 OK: If discounts are successfully retrieved.
+    /// - 404 Not Found: If the room type with the given ID does not exist.
+    /// - 500 Internal Server Error: If an unexpected error occurs during the operation.
+    /// </returns>
     [HttpGet("{roomTypeId:guid}/discounts")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize(Policy = "MustBeAdmin")]
     public async Task<IActionResult> GetAllDiscountsByRoomTypeIdAsync(Guid roomTypeId,
@@ -47,6 +58,14 @@ public class RoomTypesController : Controller
         return Ok(paginatedListOfAmenities.Items);
     }
 
+    /// <summary>
+    /// Retrieves a discount by its unique identifier (GUID).
+    /// </summary>
+    /// <param name="discountId">The unique identifier of the discount.</param>
+    /// <returns>
+    /// - 200 OK: If the discount is successfully retrieved.
+    /// - 404 Not Found: If the discount with the given ID does not exist.
+    /// </returns>
     [HttpGet("discounts/{discountId:guid}", Name = "GetDiscount")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -61,11 +80,22 @@ public class RoomTypesController : Controller
         return Ok(await _mediator.Send(request));
     }
     
+    /// <summary>
+    /// Creates a new discount.
+    /// </summary>
+    /// <param name="createDiscountCommand">The command containing discount creation data.</param>
+    /// <returns>
+    /// - 201 Created: If the discount is successfully created.
+    /// - 400 Bad Request: If the request data is invalid or a conflicting discount already exists.
+    /// - 404 Not Found: If the room type with the given ID does not exist.
+    /// - 500 Internal Server Error: If an unexpected error occurs during the operation.
+    /// </returns>
     [HttpPost("discounts")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize("MustBeAdmin")]
     public async Task<IActionResult> CreateDiscountAsync(CreateDiscountCommand createDiscountCommand)
@@ -103,11 +133,21 @@ public class RoomTypesController : Controller
         }
     }
 
+    /// <summary>
+    /// Deletes a discount by its unique identifier (GUID).
+    /// </summary>
+    /// <param name="discountId">The unique identifier of the discount to delete.</param>
+    /// <returns>
+    /// - 204 No Content: If the discount is successfully deleted.
+    /// - 404 Not Found: If the discount with the given ID does not exist.
+    /// - 500 Internal Server Error: If an unexpected error occurs during the operation.
+    /// </returns>
     [HttpDelete("discounts/{discountId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize("MustBeAdmin")]
     public async Task<IActionResult> DeleteDiscountAsync(Guid discountId)
