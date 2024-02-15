@@ -11,6 +11,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using TAABP.API.Utils;
 using TAABP.API.Validators.CityValidators;
 
 namespace TAABP.API.Controllers;
@@ -239,30 +240,61 @@ public class CitiesController : Controller
     /// - 400 Bad Request: If the image format is not supported.
     /// - 500 Internal Server Error: If an unexpected error occurs during the operation.
     /// </returns>
-    [HttpPost("{cityId:guid}/photos")]
+    [HttpPost("{cityId:guid}/gallery")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize("MustBeAdmin")]
     public async Task<IActionResult> UploadImageForCityAsync(Guid cityId, IFormFile file)
     {
-        if (!await _mediator.Send(new CheckCityExistsQuery { Id = cityId })) 
-            return NotFound($"City with ID {cityId} does not exist");
-        
-        using var memoryStream = new MemoryStream();
-        await file.CopyToAsync(memoryStream);
-        var base64Content = Convert.ToBase64String(memoryStream.ToArray());
-        var imageFormat = GetImageFormat(file.ContentType);
-        if (imageFormat == null) return BadRequest($"The {imageFormat} format are not supported");
-        
-        var imageCreationDto = new ImageCreationDto
+        try
         {
-            EntityId = cityId,
-            Base64Content = base64Content,
-            Format = imageFormat.Value
-        };
-        
-        await _imageService.UploadImageAsync(imageCreationDto);
-        return Ok("Image uploaded successfully.");
+            if (!await _mediator.Send(new CheckCityExistsQuery { Id = cityId })) 
+                return NotFound($"City with ID {cityId} does not exist");
+
+            var imageCreationDto = await ImageUploadHelper.CreateImageCreationDto(cityId, file, ImageType.Gallery);
+            await _imageService.UploadImageAsync(imageCreationDto);
+            return Ok("Image uploaded successfully.");
+        }
+        catch (NotSupportedException e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    /// <summary>
+    /// Uploads a thumbnail for a city based on its unique identifier (GUID).
+    /// </summary>
+    /// <param name="cityId">The unique identifier of the city.</param>
+    /// <param name="file">The image file to be uploaded.</param>
+    /// <returns>
+    /// - 200 OK: If the thumbnail is uploaded successfully.
+    /// - 404 Not Found: If the city with the given ID does not exist.
+    /// - 400 Bad Request: If the thumbnail format is not supported.
+    /// - 500 Internal Server Error: If an unexpected error occurs during the operation.
+    /// </returns>
+    [HttpPut("{cityId:guid}/thumbnail")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize("MustBeAdmin")]
+    public async Task<IActionResult> UploadThumbnailForCityAsync(Guid cityId, IFormFile file)
+    {
+        try
+        {
+            if (!await _mediator.Send(new CheckCityExistsQuery { Id = cityId })) 
+                return NotFound($"City with ID {cityId} does not exist");
+
+            var imageCreationDto = await ImageUploadHelper.CreateImageCreationDto(cityId, file, ImageType.Thumbnail);
+            await _imageService.UploadThumbnailAsync(imageCreationDto);
+            return Ok("Image uploaded successfully.");
+        }
+        catch(NotSupportedException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
     
     /// <summary>
@@ -299,15 +331,5 @@ public class CitiesController : Controller
                 message = e.Message 
             });
         }
-    }
-    
-    private ImageFormat? GetImageFormat(string contentType)
-    {
-        return contentType.ToLower() switch
-        {
-            "image/jpeg" => ImageFormat.Jpeg,
-            "image/png" => ImageFormat.Png,
-            _ => null
-        };
     }
 }

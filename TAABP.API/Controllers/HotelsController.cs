@@ -17,6 +17,7 @@ using Infrastructure.ImageStorage;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TAABP.API.Utils;
 using TAABP.API.Validators.BookingValidators;
 using TAABP.API.Validators.HotelValidators;
 using TAABP.API.Validators.RoomValidators;
@@ -199,7 +200,7 @@ public class HotelsController : Controller
     /// - 401 Unauthorized: If the user is not authenticated.
     /// - 500 Internal Server Error: If an unexpected error occurs.
     /// </returns>
-    [HttpGet("{hotelId}/available-rooms")]
+    [HttpGet("{hotelId:guid}/available-rooms")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -251,33 +252,61 @@ public class HotelsController : Controller
     /// - 400 Bad Request: If the image format is not supported.
     /// - 500 Internal Server Error: If an unexpected error occurs.
     /// </returns>
-    [HttpPost("{hotelId}/photos")]
+    [HttpPost("{hotelId:guid}/gallery")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
     [Authorize(Policy = "MustBeAdmin")]
-    public async Task<IActionResult> UploadeImageForHotelAsync(Guid hotelId, IFormFile file)
+    public async Task<IActionResult> UploadImageForHotelAsync(Guid hotelId, IFormFile file)
     {
-        if (!await _mediator.Send(new CheckHotelExistsQuery { Id = hotelId })) 
-            return NotFound($"Hotel with ID {hotelId} does not exist");
-        
-        using var memoryStream = new MemoryStream();
-        await file.CopyToAsync(memoryStream);
-        var base64Content = Convert.ToBase64String(memoryStream.ToArray());
-        var imageFormat = GetImageFormat(file.ContentType);
-        if (imageFormat == null) return BadRequest($"The {imageFormat} format are not supported");
-        
-        var imageCreationDto = new ImageCreationDto
+        try
         {
-            EntityId = hotelId,
-            Base64Content = base64Content,
-            Format = imageFormat.Value
-        };
-        
-        await _imageService.UploadImageAsync(imageCreationDto);
-        return Ok("Image uploaded successfully.");
+            if (!await _mediator.Send(new CheckHotelExistsQuery() { Id = hotelId })) 
+                return NotFound($"Hotel with ID {hotelId} does not exist");
+
+            var imageCreationDto = await ImageUploadHelper.CreateImageCreationDto(hotelId, file, ImageType.Gallery);
+            await _imageService.UploadImageAsync(imageCreationDto);
+            return Ok("Image uploaded successfully.");
+        }
+        catch (NotSupportedException e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+    
+    /// <summary>
+    /// Uploads a thumbnail for a hotel based on its unique identifier (GUID).
+    /// </summary>
+    /// <param name="hotelId">The unique identifier of the hotel.</param>
+    /// <param name="file">The image file to be uploaded.</param>
+    /// <returns>
+    /// - 200 OK: If the thumbnail is uploaded successfully.
+    /// - 404 Not Found: If the hotel with the given ID does not exist.
+    /// - 400 Bad Request: If the thumbnail format is not supported.
+    /// - 500 Internal Server Error: If an unexpected error occurs during the operation.
+    /// </returns>
+    [HttpPut("{hotelId:guid}/thumbnail")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize("MustBeAdmin")]
+    public async Task<IActionResult> UploadThumbnailForHotelAsync(Guid hotelId, IFormFile file)
+    {
+        try
+        {
+            if (!await _mediator.Send(new CheckHotelExistsQuery { Id = hotelId })) 
+                return NotFound($"Hotel with ID {hotelId} does not exist");
+
+            var imageCreationDto = await ImageUploadHelper.CreateImageCreationDto(hotelId, file, ImageType.Thumbnail);
+            await _imageService.UploadThumbnailAsync(imageCreationDto);
+            return Ok("Image uploaded successfully.");
+        }
+        catch(NotSupportedException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
@@ -348,6 +377,35 @@ public class HotelsController : Controller
     }
 
     /// <summary>
+    /// Retrieves a room from the specified hotel by its unique identifier.
+    /// </summary>
+    /// <param name="hotelId">The unique identifier of the hotel.</param>
+    /// <param name="roomId">The unique identifier of the room.</param>
+    /// <returns>
+    /// Returns a response with the room details if the room exists and belongs to the specified hotel,
+    /// otherwise returns a 404 Not Found response if the hotel or room does not exist or the room does not belong to the hotel,
+    /// or a 500 Internal Server Error response if an unexpected error occurs.
+    /// </returns>
+    [HttpGet("{hotelId:guid}/rooms/{roomId:guid}", Name = "GetRoom")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize]
+    public async Task<IActionResult> GetRoomByIdAndHotelIdAsync(Guid hotelId, Guid roomId)
+    {
+        if (!await _mediator.Send(new CheckHotelExistsQuery { Id = hotelId })) 
+            return NotFound($"Hotel with ID {hotelId} doesn't exist");
+        
+        if(!await _mediator.Send(new CheckRoomBelongsToHotelQuery{HotelId = hotelId, RoomId = roomId}))
+            return NotFound("The room doesn't belong to the hotel.");
+        
+        var request = new GetRoomByIdQuery{ RoomId = roomId };
+        var result = await _mediator.Send(request);
+        if (result is null) return NotFound();
+        return Ok(result);
+    }
+    
+    /// <summary>
     /// Creates a new room for a specific hotel based on its unique identifier (GUID).
     /// </summary>
     /// <param name="hotelId">The unique identifier of the hotel.</param>
@@ -358,9 +416,10 @@ public class HotelsController : Controller
     /// - 404 Not Found: If the hotel with the given ID does not exist.
     /// - 500 Internal Server Error: If an unexpected error occurs.
     /// </returns>
-    [HttpPost("{hotelId}/rooms")]
+    [HttpPost("{hotelId:guid}/rooms")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize(Policy = "MustBeAdmin")]
@@ -379,7 +438,9 @@ public class HotelsController : Controller
             var createdRoom = await _mediator.Send(request);
             if (createdRoom is null) return BadRequest();
             
-            return Ok("OKAY!!!");
+            return CreatedAtRoute("GetRoom", 
+                new {roomId = createdRoom.Id},
+                createdRoom);
         }
         catch (NotFoundException e)
         {
@@ -447,15 +508,5 @@ public class HotelsController : Controller
             JsonSerializer.Serialize(paginatedListOfBookings.PageData));
 
         return Ok(paginatedListOfBookings.Items);
-    }
-    
-    private ImageFormat? GetImageFormat(string contentType)
-    {
-        return contentType.ToLower() switch
-        {
-            "image/jpeg" => ImageFormat.Jpeg,
-            "image/png" => ImageFormat.Png,
-            _ => null
-        };
     }
 }

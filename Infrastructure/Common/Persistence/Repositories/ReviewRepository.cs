@@ -20,7 +20,6 @@ public class ReviewRepository : IReviewRepository
 
     public async Task<PaginatedList<Review>> GetAllByHotelIdAsync(Guid hotelId, string? searchQuery, int pageNumber, int pageSize)
     {
-        
         try
         {
             var query = (from booking in _context.Bookings
@@ -42,6 +41,7 @@ public class ReviewRepository : IReviewRepository
                 query = query.Where
                     (review => review.Comment.Contains(searchQuery));
             }
+            
             var result = query
                 .Skip(pageSize * (pageNumber - 1))
                 .Take(pageSize)
@@ -52,7 +52,8 @@ public class ReviewRepository : IReviewRepository
         }
         catch (Exception)
         {
-            return new PaginatedList<Review>(new List<Review>(), new PageData(0, 0, 0));
+            return new PaginatedList<Review>(new List<Review>(), 
+            new PageData(0, 0, 0));
         }
     }
 

@@ -22,5 +22,10 @@ public class ImageConfiguration : IEntityTypeConfiguration<Image>
         builder
             .Property(image => image.Url)
             .IsRequired();
+        
+        builder
+            .Property(image => image.Type)
+            .IsRequired()
+            .HasConversion(new EnumToStringConverter<ImageType>());
     }
 }

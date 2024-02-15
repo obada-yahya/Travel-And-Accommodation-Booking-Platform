@@ -18,7 +18,8 @@ public class CreateDiscountCommandHandler : IRequestHandler<CreateDiscountComman
         _mapper = mapper;
     }
 
-    public async Task<DiscountDto?> Handle(CreateDiscountCommand request, CancellationToken cancellationToken)
+    public async Task<DiscountDto?> Handle(CreateDiscountCommand request,
+    CancellationToken cancellationToken)
     {
         var discountToAdd = _mapper.Map<Discount>(request);
         var addedDiscount = await _discountRepository.InsertAsync(discountToAdd);

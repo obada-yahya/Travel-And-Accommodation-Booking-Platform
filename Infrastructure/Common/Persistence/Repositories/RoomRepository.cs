@@ -72,6 +72,16 @@ public class RoomRepository : IRoomRepository
         }
     }
 
+    public async Task<bool> CheckRoomBelongsToHotelAsync(Guid hotelId, Guid roomId)
+    {
+        return await (from roomType in _context.RoomTypes
+            where roomType.HotelId.Equals(hotelId)
+            join room in _context.Rooms on
+            roomType.Id equals room.RoomTypeId 
+            where room.Id.Equals(roomId) select room)
+            .AnyAsync();
+    }
+
     public async Task<Room?> GetByIdAsync(Guid roomId)
     {
         try
