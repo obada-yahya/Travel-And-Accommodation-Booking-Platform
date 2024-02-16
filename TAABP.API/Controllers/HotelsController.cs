@@ -198,9 +198,14 @@ public class HotelsController : Controller
     }
     
     /// <summary>
-    /// Retrieves available rooms for a hotel based on its unique identifier (GUID)
-    /// and optional filtering criteria.
+    /// Retrieves available rooms for a hotel based on its unique identifier (GUID) and optional filtering criteria.
     /// </summary>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     GET /api/hotels/{hotelId}/available-rooms?checkInDate=2024-02-01&amp;CheckOutDate=2024-02-03
+    /// 
+    /// </remarks>
     /// <param name="hotelId">The unique identifier of the hotel.</param>
     /// <param name="hotelAvailableRoomsDto">Optional parameters for filtering available rooms.</param>
     /// <returns>

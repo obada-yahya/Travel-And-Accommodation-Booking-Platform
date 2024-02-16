@@ -85,6 +85,17 @@ public class RoomTypesController : Controller
     /// Creates a new discount.
     /// </summary>
     /// <param name="createDiscountCommand">The command containing discount creation data.</param>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     POST /api/room-types/discounts
+    ///     {
+    ///        "roomTypeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///        "discountPercentage": 0.15,
+    ///        "fromDate": "2024-02-01",
+    ///        "toDate": "2024-02-3"
+    ///     }
+    /// </remarks>
     /// <returns>
     /// - 201 Created: If the discount is successfully created.
     /// - 400 Bad Request: If the request data is invalid or a conflicting discount already exists.
