@@ -13,8 +13,6 @@ public class GetAllHotelsValidator : GenericValidator<GetAllHotelsQuery>
 
         RuleFor(roomAmenity => roomAmenity.PageSize)
             .GreaterThan(0)
-            .WithMessage("Page size must be greater than 0.")
-            .LessThan(21)
-            .WithMessage("Page Size can't be greater than 20");
+            .WithMessage("Page size must be greater than 0.");
     }
 }
