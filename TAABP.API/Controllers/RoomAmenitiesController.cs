@@ -27,17 +27,18 @@ public class RoomAmenitiesController : Controller
     }
     
     /// <summary>
-    /// Retrieves a list of room amenities, supporting pagination.
+    /// Retrieves a paginated list of room amenities based on the specified search criteria.
     /// </summary>
-    /// <param name="pageSize">Number of items per page.</param>
-    /// <param name="pageNumber">Page number.</param>
-    /// <param name="searchQuery">Search query string.</param>
-    /// <returns>Returns a list of room amenities.</returns>
+    /// <param name="getAllRoomAmenitiesQuery">Query parameters for retrieving room amenities.</param>
+    /// <returns>Returns a paginated list of room amenities.</returns>
+    /// <remarks>
+    /// This endpoint supports pagination to retrieve a subset of room amenities based on the provided search criteria.
+    /// </remarks>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize(Policy = "MustBeAdmin")]
     public async Task<IActionResult> GetAllRoomAmenitiesAsync(
         [FromQuery] GetAllRoomAmenitiesQuery getAllRoomAmenitiesQuery)
@@ -76,9 +77,9 @@ public class RoomAmenitiesController : Controller
     /// <param name="roomAmenity">The data for creating a new room amenity.</param>
     /// <returns>Returns the created room amenity details.</returns>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<RoomAmenityDto>> CreateRoomAmenityAsync(RoomAmenityForCreationDto roomAmenity)
     {
         var validator = new CreateRoomAmenityValidator();
@@ -88,9 +89,8 @@ public class RoomAmenitiesController : Controller
         var request = _mapper.Map<CreateRoomAmenityCommand>(roomAmenity);
         var amenityToReturn = await _mediator.Send(request);
         if (amenityToReturn is null)
-        {
             return BadRequest();
-        }
+        
         return CreatedAtRoute("GetRoomAmenity",
             new {
                 roomAmenityId = amenityToReturn.Id
@@ -162,8 +162,11 @@ public class RoomAmenitiesController : Controller
     [HttpPatch("{roomAmenityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize("MustBeAdmin")]
     public async Task<ActionResult> PartiallyUpdateRoomAmenityAsync(Guid roomAmenityId, JsonPatchDocument<RoomAmenityForUpdateDto> patchDocument)
     {
         try
