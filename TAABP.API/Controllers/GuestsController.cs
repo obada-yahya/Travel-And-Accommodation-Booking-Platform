@@ -6,9 +6,11 @@ using Application.Queries.RoomQueries;
 using Application.Queries.UserQueries;
 using AutoMapper;
 using Domain.Exceptions;
+using Infrastructure.Pdf;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TAABP.API.Utils;
 using TAABP.API.Validators.BookingValidators;
 
 namespace TAABP.API.Controllers;
@@ -20,10 +22,13 @@ public class GuestsController : Controller
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
-    public GuestsController(IMediator mediator, IMapper mapper)
+    private readonly IPdfService _pdfService;
+    
+    public GuestsController(IMediator mediator, IMapper mapper, IPdfService pdfService)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _pdfService = pdfService;
     }
 
     /// <summary>
@@ -108,8 +113,8 @@ public class GuestsController : Controller
         if (!await CheckBookingExistsAsync(bookingId))
             return NotFound($"Booking with ID {bookingId} doesn't exist");
         
-        if (!await CheckAuthorizedGuestAsync(bookingId, emailClaim))
-            return Unauthorized("The authenticated user is not the same as the one who booked the room");
+        if (!await IsBookingAccessibleForGuestAsync(bookingId, emailClaim))
+            return Unauthorized("The authenticated guest is not the same as the one who booked the room");
 
         try
         {
@@ -168,8 +173,39 @@ public class GuestsController : Controller
         
         return Ok("Booking has been successfully submitted!");
     }
+
+    [HttpGet("bookings/{bookingId:guid}/invoice")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize]
+    public async Task<IActionResult> GetInvoiceForAuthenticatedGuest(Guid bookingId)
+    {
+        var identity = HttpContext.User.Identity as ClaimsIdentity; 
+        var emailClaim = identity!.Claims.First(c => c.Type == "Email").Value;
+        var nameClaim = identity.Claims.First(c => c.Type == "Name").Value;
+        
+        if (!await CheckBookingExistsAsync(bookingId))
+            return NotFound($"Booking with ID {bookingId} doesn't exist");
+        
+        if (!await IsBookingAccessibleForGuestAsync(bookingId, emailClaim))
+            return Unauthorized("The authenticated guest is not the same as the one who booked the room");
+        
+        try
+        {
+            var invoice = await _mediator.Send(new GetBookingInvoiceQuery{BookingId = bookingId});
+            var pdfBytes = await _pdfService
+                .CreatePdfFromHtmlAsync(InvoiceUtils.GenerateInvoiceForUser(invoice, nameClaim));
+            return File(pdfBytes, "application/pdf", "invoice.pdf");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while generating PDF: {ex.Message}");
+        }
+    }
     
-    private async Task<bool> CheckAuthorizedGuestAsync(Guid bookingId, string? guestEmail)
+    private async Task<bool> IsBookingAccessibleForGuestAsync(Guid bookingId, string? guestEmail)
     {
         return await _mediator.Send(new CheckBookingExistenceForAuthenticatedGuestQuery
         {
