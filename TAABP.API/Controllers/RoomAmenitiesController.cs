@@ -32,7 +32,7 @@ public class RoomAmenitiesController : Controller
     /// <param name="getAllRoomAmenitiesQuery">Query parameters for retrieving room amenities.</param>
     /// <returns>Returns a paginated list of room amenities.</returns>
     /// <remarks>
-    /// This endpoint supports pagination to retrieve a subset of room amenities based on the provided search criteria.
+    /// This endpoint supports pagination to retrieve a subset of room amenities based on the provided search.
     /// </remarks>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -85,7 +85,8 @@ public class RoomAmenitiesController : Controller
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize("MustBeAdmin")]
-    public async Task<ActionResult<RoomAmenityDto>> CreateRoomAmenityAsync(RoomAmenityForCreationDto roomAmenity)
+    public async Task<ActionResult<RoomAmenityDto>> 
+        CreateRoomAmenityAsync(RoomAmenityForCreationDto roomAmenity)
     {
         var validator = new CreateRoomAmenityValidator();
         var errors = await validator.CheckForValidationErrorsAsync(roomAmenity);
@@ -184,7 +185,8 @@ public class RoomAmenitiesController : Controller
     {
         try
         {
-            var roomAmenityDto = await _mediator.Send(new GetRoomAmenityByIdQuery { Id = roomAmenityId });
+            var roomAmenityDto = await _mediator
+            .Send(new GetRoomAmenityByIdQuery { Id = roomAmenityId });
             var roomAmenityForUpdateDto = _mapper.Map<RoomAmenityForUpdateDto>(roomAmenityDto);
             patchDocument.ApplyTo(roomAmenityForUpdateDto, ModelState);
 

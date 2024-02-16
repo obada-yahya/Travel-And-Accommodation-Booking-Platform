@@ -69,8 +69,7 @@ public class ReviewsController : Controller
     /// Returns the created review if successful.
     /// </returns>
     /// <response code="201">Returns the created review.</response>
-    /// <response code="400">Returns if the request parameters are invalid or a review already exists for the booking.</response>
-    /// <response code="401">Returns if the user is not authenticated or not authorized to create a review.</response>
+    /// <response code="400">Invalid parameters or existing review for the booking.</response>
     /// <response code="404">Returns if the booking does not exist.</response>
     /// <response code="500">Returns if an unexpected error occurs.</response>
     [HttpPost]

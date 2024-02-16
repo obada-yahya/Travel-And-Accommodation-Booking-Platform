@@ -19,7 +19,10 @@ public class AuthenticationController : Controller
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
 
-    public AuthenticationController(IConfiguration configuration, ITokenGenerator tokenGenerator, IMapper mapper, IMediator mediator)
+    public AuthenticationController(IConfiguration configuration,
+    ITokenGenerator tokenGenerator,
+    IMapper mapper,
+    IMediator mediator)
     {
         _configuration = configuration;
         _tokenGenerator = tokenGenerator;
@@ -28,12 +31,14 @@ public class AuthenticationController : Controller
     }
     
     /// <summary>
-    /// Endpoint for user sign-in. Validates user credentials and generates a JWT token upon successful authentication.
+    /// Endpoint for user sign-in. Validates user credentials and
+    /// generates a JWT token upon successful authentication.
     /// </summary>
     /// <param name="email">The email address of the user attempting to sign in.</param>
     /// <param name="password">The password associated with the user's account.</param>
     /// <returns>
-    /// If successful, returns the generated JWT token; otherwise, returns a list of validation errors or unauthorized status.
+    /// If successful, returns the generated JWT token;
+    /// otherwise, returns a list of validation errors or unauthorized status.
     /// </returns>
     [HttpPost("sign-In")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -71,8 +76,7 @@ public class AuthenticationController : Controller
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<string>> Register(
-        UserForCreationDto appUserForCreationDto)
+    public async Task<ActionResult<string>> Register(UserForCreationDto appUserForCreationDto)
     {
         try
         {
