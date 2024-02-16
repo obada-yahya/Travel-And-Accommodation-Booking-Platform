@@ -1,6 +1,7 @@
 ﻿using Domain.Common.Interfaces;
 using Domain.Common.Models;
 using Domain.Entities;
+using Infrastructure.Common.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -101,18 +102,11 @@ public class RoomRepository : IRoomRepository
     {
         return await (from room in _context.Rooms
                 where room.Id == roomId
-                join roomType in _context.RoomTypes on room.RoomTypeId equals roomType.Id
-                select roomType.PricePerNight * (1 - GetActiveDiscount(roomType.Discounts))
+                join roomType in _context.RoomTypes on 
+                room.RoomTypeId equals roomType.Id
+                select roomType.PricePerNight * 
+                (1 - DiscountUtils.GetActiveDiscount(roomType.Discounts))
             ).SingleAsync();
-    }
-
-    private static float GetActiveDiscount(IEnumerable<Discount> roomType)
-    {
-        return roomType
-            .FirstOrDefault(discount =>
-                discount.FromDate.Date <= DateTime.Today.Date && 
-                discount.ToDate.Date >= DateTime.Today.Date)
-            ?.DiscountPercentage ?? 0.0f;
     }
     
     public async Task<Room?> InsertAsync(Room room)
