@@ -33,10 +33,10 @@ public class GuestsController : Controller
     /// <returns>An ActionResult containing the recent 5 distinct hotels.</returns>
     [HttpGet("{guestId:guid}/recently-visited-hotels")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize(Policy = "MustBeAdmin")]
     public async Task<IActionResult> GetRecentlyVisitedHotelsForGuestAsync(Guid guestId)
     {
@@ -47,7 +47,7 @@ public class GuestsController : Controller
         }
         catch (NotFoundException e)
         {
-            return BadRequest(e.Message);
+            return NotFound(e.Message);
         }
     }
     
@@ -57,8 +57,8 @@ public class GuestsController : Controller
     /// <returns>An ActionResult containing the recent 5 distinct hotels.</returns>
     [HttpGet("recently-visited-hotels")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
     public async Task<IActionResult> GetRecentlyVisitedHotelsForAuthenticatedGuestAsync()
     {
@@ -71,8 +71,12 @@ public class GuestsController : Controller
     /// <summary>
     /// Retrieves bookings for the authenticated guest.
     /// </summary>
+    /// <param name="count">The maximum number of bookings to retrieve.</param>
     /// <returns>Returns the bookings for the authenticated guest.</returns>
     [HttpGet("bookings")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
     public async Task<IActionResult> GetBookingsForAuthenticatedGuestAsync(int count = 5)
     {
@@ -90,8 +94,8 @@ public class GuestsController : Controller
     /// </summary>
     /// <param name="bookingId">The ID of the booking to cancel.</param>
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpDelete("bookings/{bookingId:guid}")]
@@ -102,7 +106,7 @@ public class GuestsController : Controller
         var emailClaim = identity.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
         
         if (!await CheckBookingExistsAsync(bookingId))
-            return NotFound($"Booking with ID {bookingId} does not exist");
+            return NotFound($"Booking with ID {bookingId} doesn't exist");
         
         if (!await CheckAuthorizedGuestAsync(bookingId, emailClaim))
             return Unauthorized("The authenticated user is not the same as the one who booked the room");
@@ -135,9 +139,11 @@ public class GuestsController : Controller
     /// </remarks>
     /// <param name="booking">Booking details</param>
     [HttpPost("bookings")]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
     public async Task<IActionResult> ReserveRoomForAuthenticatedGuestAsync(ReserveRoomDto booking)
     {
@@ -152,7 +158,7 @@ public class GuestsController : Controller
         var emailClaim = identity!.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
         
         if (!await CheckRoomExistsAsync(booking.RoomId))
-            return NotFound($"Room with ID {booking.RoomId} does not exist");
+            return NotFound($"Room with ID {booking.RoomId} doesn't exist");
         
         var request = _mapper.Map<ReserveRoomCommand>(booking);
         request.GuestEmail = emailClaim!;
@@ -160,7 +166,7 @@ public class GuestsController : Controller
         if (bookingToReturn is null) 
             return BadRequest(bookingConflictMessage);
         
-        return Ok("Booking submitted successfully!");
+        return Ok("Booking has been successfully submitted!");
     }
     
     private async Task<bool> CheckAuthorizedGuestAsync(Guid bookingId, string? guestEmail)

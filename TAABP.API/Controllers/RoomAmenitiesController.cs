@@ -36,10 +36,10 @@ public class RoomAmenitiesController : Controller
     /// </remarks>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [Authorize(Policy = "MustBeAdmin")]
+    [Authorize]
     public async Task<IActionResult> GetAllRoomAmenitiesAsync(
         [FromQuery] GetAllRoomAmenitiesQuery getAllRoomAmenitiesQuery)
     {
@@ -61,8 +61,10 @@ public class RoomAmenitiesController : Controller
     /// <returns>Returns the room amenity details.</returns>
     [HttpGet("{roomAmenityId:guid}", Name = "GetRoomAmenity")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)] 
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize]
     public async Task<IActionResult> GetRoomAmenityAsync(Guid roomAmenityId)
     {
         var request = new GetRoomAmenityByIdQuery {Id = roomAmenityId};
@@ -79,7 +81,10 @@ public class RoomAmenitiesController : Controller
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize("MustBeAdmin")]
     public async Task<ActionResult<RoomAmenityDto>> CreateRoomAmenityAsync(RoomAmenityForCreationDto roomAmenity)
     {
         var validator = new CreateRoomAmenityValidator();
@@ -105,7 +110,10 @@ public class RoomAmenitiesController : Controller
     [HttpDelete("{roomAmenityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize("MustBeAdmin")]
     public async Task<ActionResult> DeleteRoomAmenityAsync(Guid roomAmenityId)
     {
         try
@@ -129,8 +137,12 @@ public class RoomAmenitiesController : Controller
     [HttpPut("{roomAmenityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> UpdateRoomAmenityAsync(Guid roomAmenityId, RoomAmenityForUpdateDto roomAmenityForUpdateDto)
+    [Authorize("MustBeAdmin")]
+    public async Task<ActionResult> UpdateRoomAmenityAsync(Guid roomAmenityId,
+    RoomAmenityForUpdateDto roomAmenityForUpdateDto)
     {
         try
         {
@@ -167,7 +179,8 @@ public class RoomAmenitiesController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize("MustBeAdmin")]
-    public async Task<ActionResult> PartiallyUpdateRoomAmenityAsync(Guid roomAmenityId, JsonPatchDocument<RoomAmenityForUpdateDto> patchDocument)
+    public async Task<ActionResult> PartiallyUpdateRoomAmenityAsync(Guid roomAmenityId,
+    JsonPatchDocument<RoomAmenityForUpdateDto> patchDocument)
     {
         try
         {
