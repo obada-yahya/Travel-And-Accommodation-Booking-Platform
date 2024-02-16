@@ -3,6 +3,7 @@ using Infrastructure.Auth.AuthUser;
 using Infrastructure.Auth.Token;
 using Infrastructure.Common.Persistence.Repositories;
 using Infrastructure.ImageStorage;
+using Infrastructure.Pdf;
 using Microsoft.Extensions.DependencyInjection;
 using PasswordHashing;
 
@@ -25,6 +26,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IHotelRepository, HotelRepository>();
         services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
         services.AddScoped<IDiscountRepository, DiscountRepository>();
+        services.AddScoped<IPdfService, PdfService>();
         
         return services;
     }

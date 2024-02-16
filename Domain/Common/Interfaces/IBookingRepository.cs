@@ -12,6 +12,7 @@ public interface IBookingRepository
         DateTime proposedCheckOut);
     public Task<Booking?> GetByIdAsync(Guid bookingId);
     public Task<Booking?> InsertAsync(Booking booking);
+    public Task<Invoice> GetInvoiceByBookingIdAsync(Guid bookingId);
     public Task UpdateAsync(Booking booking);
     public Task DeleteAsync(Guid bookingId);
     public Task SaveChangesAsync();

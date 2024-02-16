@@ -107,6 +107,22 @@ public class BookingRepository : IBookingRepository
         return booking;
     }
 
+    public async Task<Invoice> GetInvoiceByBookingIdAsync(Guid bookingId)
+    {
+        return await (from booking in _context.Bookings
+            where booking.Id.Equals(bookingId)
+            join room in _context.Rooms on booking.RoomId equals room.Id
+            join roomType in _context.RoomTypes on room.RoomTypeId equals roomType.Id
+            join hotel in _context.Hotels on roomType.HotelId equals hotel.Id
+            select new Invoice
+            {
+                Id = bookingId,
+                BookingDate = booking.BookingDate,
+                Price = booking.Price,
+                HotelName = hotel.Name
+            }).SingleAsync();
+    }
+
     public async Task UpdateAsync(Booking booking)
     {
         _context.Bookings.Update(booking);

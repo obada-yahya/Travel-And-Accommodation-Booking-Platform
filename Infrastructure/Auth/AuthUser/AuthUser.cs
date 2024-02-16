@@ -18,13 +18,16 @@ public class AuthUser : IAuthUser
         var user = await _context
             .Users
             .SingleOrDefaultAsync(appUser => appUser.Email.Equals(email));
-
-        if (user is null) return null;
         
-        return new User(
-            user.Email,
-            user.PasswordHash,
-            user.Role,
-            user.Salt);
+        if (user is null) return null;
+        return new User
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Password = user.PasswordHash,
+            Role = user.Role,
+            Salt = user.Salt
+        };
     }
 }
