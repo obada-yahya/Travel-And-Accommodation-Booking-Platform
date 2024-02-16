@@ -51,6 +51,7 @@ public class HotelsController : Controller
     /// </returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -78,6 +79,7 @@ public class HotelsController : Controller
     /// </returns>
     [HttpGet("{hotelId:guid}", Name = "GetHotel")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
@@ -103,6 +105,7 @@ public class HotelsController : Controller
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize(Policy = "MustBeAdmin")]
     public async Task<ActionResult<HotelDto>> CreateHotelAsync(HotelForCreationDto hotel)
@@ -114,9 +117,8 @@ public class HotelsController : Controller
         var request = _mapper.Map<CreateHotelCommand>(hotel);
         var createdHotel = await _mediator.Send(request);
         if (createdHotel is null)
-        {
             return BadRequest();
-        }
+        
         return CreatedAtRoute("GetHotel", 
         new {hotelId = createdHotel.Id},
         createdHotel);
@@ -136,6 +138,7 @@ public class HotelsController : Controller
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize(Policy = "MustBeAdmin")]
     public async Task<ActionResult> DeleteHotelAsync(Guid hotelId)
@@ -159,14 +162,19 @@ public class HotelsController : Controller
     /// <param name="hotelForUpdateDto">The updated information for the hotel.</param>
     /// <returns>
     /// - 204 No Content: If the hotel information is successfully updated.
-    /// - 400 Bad Request: If there are validation errors in the updated hotel information or if a data constraint violation occurs.
+    /// - 400 Bad Request: If there are validation errors in the updated
+    /// hotel information or if a data constraint violation occurs.
     /// - 500 Internal Server Error: If an unexpected error occurs.
     /// </returns>
     [HttpPut("{hotelId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> UpdateHotelAsync(Guid hotelId, HotelForUpdateDto hotelForUpdateDto)
+    [Authorize("MustBeAdmin")]
+    public async Task<ActionResult> UpdateHotelAsync(Guid hotelId,
+    HotelForUpdateDto hotelForUpdateDto)
     {
         try
         {
@@ -190,7 +198,8 @@ public class HotelsController : Controller
     }
     
     /// <summary>
-    /// Retrieves available rooms for a hotel based on its unique identifier (GUID) and optional filtering criteria.
+    /// Retrieves available rooms for a hotel based on its unique identifier (GUID)
+    /// and optional filtering criteria.
     /// </summary>
     /// <param name="hotelId">The unique identifier of the hotel.</param>
     /// <param name="hotelAvailableRoomsDto">Optional parameters for filtering available rooms.</param>
@@ -206,7 +215,8 @@ public class HotelsController : Controller
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
-    public async Task<IActionResult> GetHotelAvailableRoomsAsync(Guid hotelId, [FromQuery] GetHotelAvailableRoomsDto hotelAvailableRoomsDto)
+    public async Task<IActionResult> GetHotelAvailableRoomsAsync(Guid hotelId,
+    [FromQuery] GetHotelAvailableRoomsDto hotelAvailableRoomsDto)
     {
         var validator = new GetHotelAvailableRoomsValidator();
         var errors = await validator.CheckForValidationErrorsAsync(hotelAvailableRoomsDto);
@@ -229,6 +239,7 @@ public class HotelsController : Controller
     /// </returns>
     [HttpGet("{hotelId:guid}/photos")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
@@ -237,8 +248,7 @@ public class HotelsController : Controller
         if (!await _mediator.Send(new CheckHotelExistsQuery { Id = hotelId })) 
             return NotFound($"Hotel with ID {hotelId} does not exist");
         
-        var images = await _imageService.GetAllImagesAsync(hotelId);
-        return Ok(images);
+        return Ok(await _imageService.GetAllImagesAsync(hotelId));
     }
     
     /// <summary>
@@ -255,6 +265,8 @@ public class HotelsController : Controller
     [HttpPost("{hotelId:guid}/gallery")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize(Policy = "MustBeAdmin")]
@@ -262,10 +274,11 @@ public class HotelsController : Controller
     {
         try
         {
-            if (!await _mediator.Send(new CheckHotelExistsQuery() { Id = hotelId })) 
+            if (!await _mediator.Send(new CheckHotelExistsQuery { Id = hotelId })) 
                 return NotFound($"Hotel with ID {hotelId} does not exist");
 
-            var imageCreationDto = await ImageUploadHelper.CreateImageCreationDto(hotelId, file, ImageType.Gallery);
+            var imageCreationDto = await ImageUploadHelper
+            .CreateImageCreationDto(hotelId, file, ImageType.Gallery);
             await _imageService.UploadImageAsync(imageCreationDto);
             return Ok("Image uploaded successfully.");
         }
@@ -289,6 +302,8 @@ public class HotelsController : Controller
     [HttpPut("{hotelId:guid}/thumbnail")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize("MustBeAdmin")]
@@ -299,7 +314,8 @@ public class HotelsController : Controller
             if (!await _mediator.Send(new CheckHotelExistsQuery { Id = hotelId })) 
                 return NotFound($"Hotel with ID {hotelId} does not exist");
 
-            var imageCreationDto = await ImageUploadHelper.CreateImageCreationDto(hotelId, file, ImageType.Thumbnail);
+            var imageCreationDto = await ImageUploadHelper
+            .CreateImageCreationDto(hotelId, file, ImageType.Thumbnail);
             await _imageService.UploadThumbnailAsync(imageCreationDto);
             return Ok("Image uploaded successfully.");
         }
@@ -321,6 +337,8 @@ public class HotelsController : Controller
     /// </returns>
     [HttpDelete("{hotelId:guid}/photos/{photoId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize(Policy = "MustBeAdmin")]
@@ -357,6 +375,7 @@ public class HotelsController : Controller
     /// </returns>
     [HttpGet("{hotelId:guid}/rooms")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
@@ -383,11 +402,13 @@ public class HotelsController : Controller
     /// <param name="roomId">The unique identifier of the room.</param>
     /// <returns>
     /// Returns a response with the room details if the room exists and belongs to the specified hotel,
-    /// otherwise returns a 404 Not Found response if the hotel or room does not exist or the room does not belong to the hotel,
+    /// otherwise returns a 404 Not Found response
+    /// if the hotel or room does not exist or the room does not belong to the hotel,
     /// or a 500 Internal Server Error response if an unexpected error occurs.
     /// </returns>
     [HttpGet("{hotelId:guid}/rooms/{roomId:guid}", Name = "GetRoom")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
@@ -460,6 +481,7 @@ public class HotelsController : Controller
     /// </returns>
     [HttpGet("{hotelId:guid}/room-types")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
@@ -484,17 +506,27 @@ public class HotelsController : Controller
     }
     
     /// <summary>
-    /// Retrieves all bookings for a specific hotel.
+    /// Retrieves all bookings associated with a specific hotel,
+    /// supporting optional filtering, pagination, and sorting.
     /// </summary>
-    /// <param name="bookingQuery">Optional. Query parameters for filtering, pagination, and sorting.</param>
+    /// <param name="hotelId">The unique identifier of the hotel.</param>
+    /// <param name="bookingQuery">Optional query parameters for
+    /// filtering, pagination, and sorting of bookings.</param>
+    /// <returns>Returns a paginated list of bookings for the specified hotel.</returns>
+    /// <remarks>
+    /// This endpoint allows retrieval of bookings associated with a
+    /// specific hotel, supporting filtering,
+    /// pagination, and sorting based on provided query parameters.
+    /// </remarks>
     [HttpGet("{hotelId:guid}/bookings")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize(Policy = "MustBeAdmin")]
     public async Task<IActionResult> GetAllBookingsByHotelIdAsync(Guid hotelId,
-        [FromQuery] BookingQueryDto bookingQuery)
+    [FromQuery] BookingQueryDto bookingQuery)
     {
         var getBookingQuery = _mapper.Map<GetBookingsByHotelIdQuery>(bookingQuery);
         getBookingQuery.HotelId = hotelId;
