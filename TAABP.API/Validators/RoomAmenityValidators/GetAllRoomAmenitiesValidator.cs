@@ -1,6 +1,5 @@
 ﻿using Application.Queries.RoomAmenityQueries;
 using FluentValidation;
-using Infrastructure.Auth.Models;
 
 namespace TAABP.API.Validators.RoomAmenityValidators;
 

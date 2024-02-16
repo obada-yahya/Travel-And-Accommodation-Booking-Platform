@@ -7,7 +7,7 @@ public class GenericValidator<T> : AbstractValidator<T>
 {
     public async Task<List<ErrorModel>> CheckForValidationErrorsAsync(T request)
     {
-        var results = Validate(request);
+        var results = await ValidateAsync(request);
 
         return !results.IsValid
             ? await Task.FromResult(results.Errors.Select(failure =>

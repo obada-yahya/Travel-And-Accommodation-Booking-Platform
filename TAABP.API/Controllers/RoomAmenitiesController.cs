@@ -14,6 +14,7 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("api/room-amenities")]
+[ApiVersion("1.0")]
 public class RoomAmenitiesController : Controller
 {
     private readonly IMediator _mediator;
@@ -26,18 +27,19 @@ public class RoomAmenitiesController : Controller
     }
     
     /// <summary>
-    /// Retrieves a list of room amenities, supporting pagination.
+    /// Retrieves a paginated list of room amenities based on the specified search criteria.
     /// </summary>
-    /// <param name="pageSize">Number of items per page.</param>
-    /// <param name="pageNumber">Page number.</param>
-    /// <param name="searchQuery">Search query string.</param>
-    /// <returns>Returns a list of room amenities.</returns>
+    /// <param name="getAllRoomAmenitiesQuery">Query parameters for retrieving room amenities.</param>
+    /// <returns>Returns a paginated list of room amenities.</returns>
+    /// <remarks>
+    /// This endpoint supports pagination to retrieve a subset of room amenities based on the provided search.
+    /// </remarks>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [Authorize(Policy = "MustBeAdmin")]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize]
     public async Task<IActionResult> GetAllRoomAmenitiesAsync(
         [FromQuery] GetAllRoomAmenitiesQuery getAllRoomAmenitiesQuery)
     {
@@ -59,8 +61,10 @@ public class RoomAmenitiesController : Controller
     /// <returns>Returns the room amenity details.</returns>
     [HttpGet("{roomAmenityId:guid}", Name = "GetRoomAmenity")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)] 
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize]
     public async Task<IActionResult> GetRoomAmenityAsync(Guid roomAmenityId)
     {
         var request = new GetRoomAmenityByIdQuery {Id = roomAmenityId};
@@ -75,10 +79,14 @@ public class RoomAmenitiesController : Controller
     /// <param name="roomAmenity">The data for creating a new room amenity.</param>
     /// <returns>Returns the created room amenity details.</returns>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<RoomAmenityDto>> CreateRoomAmenityAsync(RoomAmenityForCreationDto roomAmenity)
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize("MustBeAdmin")]
+    public async Task<ActionResult<RoomAmenityDto>> 
+        CreateRoomAmenityAsync(RoomAmenityForCreationDto roomAmenity)
     {
         var validator = new CreateRoomAmenityValidator();
         var errors = await validator.CheckForValidationErrorsAsync(roomAmenity);
@@ -87,9 +95,8 @@ public class RoomAmenitiesController : Controller
         var request = _mapper.Map<CreateRoomAmenityCommand>(roomAmenity);
         var amenityToReturn = await _mediator.Send(request);
         if (amenityToReturn is null)
-        {
             return BadRequest();
-        }
+        
         return CreatedAtRoute("GetRoomAmenity",
             new {
                 roomAmenityId = amenityToReturn.Id
@@ -104,7 +111,10 @@ public class RoomAmenitiesController : Controller
     [HttpDelete("{roomAmenityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize("MustBeAdmin")]
     public async Task<ActionResult> DeleteRoomAmenityAsync(Guid roomAmenityId)
     {
         try
@@ -128,8 +138,12 @@ public class RoomAmenitiesController : Controller
     [HttpPut("{roomAmenityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> UpdateRoomAmenityAsync(Guid roomAmenityId, RoomAmenityForUpdateDto roomAmenityForUpdateDto)
+    [Authorize("MustBeAdmin")]
+    public async Task<ActionResult> UpdateRoomAmenityAsync(Guid roomAmenityId,
+    RoomAmenityForUpdateDto roomAmenityForUpdateDto)
     {
         try
         {
@@ -161,13 +175,18 @@ public class RoomAmenitiesController : Controller
     [HttpPatch("{roomAmenityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> PartiallyUpdateRoomAmenityAsync(Guid roomAmenityId, JsonPatchDocument<RoomAmenityForUpdateDto> patchDocument)
+    [Authorize("MustBeAdmin")]
+    public async Task<ActionResult> PartiallyUpdateRoomAmenityAsync(Guid roomAmenityId,
+    JsonPatchDocument<RoomAmenityForUpdateDto> patchDocument)
     {
         try
         {
-            var roomAmenityDto = await _mediator.Send(new GetRoomAmenityByIdQuery { Id = roomAmenityId });
+            var roomAmenityDto = await _mediator
+            .Send(new GetRoomAmenityByIdQuery { Id = roomAmenityId });
             var roomAmenityForUpdateDto = _mapper.Map<RoomAmenityForUpdateDto>(roomAmenityDto);
             patchDocument.ApplyTo(roomAmenityForUpdateDto, ModelState);
 

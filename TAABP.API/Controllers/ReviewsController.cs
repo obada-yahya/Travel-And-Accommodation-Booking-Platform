@@ -14,6 +14,7 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("/api/reviews")]
+[ApiVersion("1.0")]
 public class ReviewsController : Controller
 {
     private readonly IMediator _mediator;
@@ -36,13 +37,12 @@ public class ReviewsController : Controller
     /// <response code="200">Returns a paginated list of reviews.</response>
     /// <response code="400">Returns validation errors if the request parameters are invalid.</response>
     /// <response code="401">Returns if the user is not authenticated.</response>
-    /// <response code="403">Returns if the user does not have permission to access the resource.</response>
     /// <response code="500">Returns if an unexpected error occurs.</response>
-    [HttpGet("hotels/{hotelId}")]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpGet("hotels/{hotelId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
     public async Task<IActionResult> GetAllReviewsAsync(Guid hotelId,
         [FromQuery] ReviewQueryDto reviewQueryDto)
@@ -55,7 +55,7 @@ public class ReviewsController : Controller
         if (errors.Count > 0) return BadRequest(errors);
         
         var paginatedListOfCities = await _mediator.Send(reviewQuery);
-        Response.Headers.Add("X-Pagination",
+        Response.Headers.Add("X-Pagination", 
             JsonSerializer.Serialize(paginatedListOfCities.PageData));
 
         return Ok(paginatedListOfCities.Items);
@@ -69,17 +69,16 @@ public class ReviewsController : Controller
     /// Returns the created review if successful.
     /// </returns>
     /// <response code="201">Returns the created review.</response>
-    /// <response code="400">Returns if the request parameters are invalid or a review already exists for the booking.</response>
-    /// <response code="401">Returns if the user is not authenticated or not authorized to create a review.</response>
+    /// <response code="400">Invalid parameters or existing review for the booking.</response>
     /// <response code="404">Returns if the booking does not exist.</response>
     /// <response code="500">Returns if an unexpected error occurs.</response>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
     public async Task<ActionResult<ReviewDto>> CreateReviewAsync(ReviewForCreationDto review)
     {
@@ -105,7 +104,6 @@ public class ReviewsController : Controller
         {
             return BadRequest();
         }
-        
         return Ok("Review submitted successfully!");
     }
     

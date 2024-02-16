@@ -1,6 +1,7 @@
 ﻿using Domain.Common.Interfaces;
 using Domain.Common.Models;
 using Domain.Entities;
+using Infrastructure.Common.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -97,6 +98,17 @@ public class RoomRepository : IRoomRepository
         return null;
     }
 
+    public async Task<float> GetPriceForRoomWithDiscount(Guid roomId)
+    {
+        return await (from room in _context.Rooms
+                where room.Id == roomId
+                join roomType in _context.RoomTypes on 
+                room.RoomTypeId equals roomType.Id
+                select roomType.PricePerNight * 
+                (1 - DiscountUtils.GetActiveDiscount(roomType.Discounts))
+            ).SingleAsync();
+    }
+    
     public async Task<Room?> InsertAsync(Room room)
     {
         try

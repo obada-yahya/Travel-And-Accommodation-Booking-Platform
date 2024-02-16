@@ -2,6 +2,7 @@
 using Domain.Common.Models;
 using Domain.Entities;
 using Domain.Exceptions;
+using Infrastructure.Common.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -173,7 +174,7 @@ public class HotelRepository : IHotelRepository
                 Rating = hotel.Rating,
                 RoomId = room.Id,
                 RoomPricePerNight = roomType.PricePerNight,
-                Discount = GetActiveDiscount(roomType.Discounts),
+                Discount = DiscountUtils.GetActiveDiscount(roomType.Discounts),
                 RoomType = roomType.Category.ToString()
             };
         
@@ -194,7 +195,7 @@ public class HotelRepository : IHotelRepository
         return (await (from city in _context.Cities
             join hotel in _context.Hotels on city.Id equals hotel.CityId
             join roomType in _context.RoomTypes on hotel.Id equals roomType.HotelId
-            let activeDiscount = GetActiveDiscount(roomType.Discounts)
+            let activeDiscount = DiscountUtils.GetActiveDiscount(roomType.Discounts)
             select new FeaturedDeal
             {
                 CityName = city.Name,
@@ -209,15 +210,6 @@ public class HotelRepository : IHotelRepository
             .OrderByDescending(d => d.Discount)
             .ThenBy(d => d.FinalRoomPrice)
             .Take(count).ToList();
-    }
-
-    private static float GetActiveDiscount(IEnumerable<Discount> roomType)
-    {
-        return roomType
-               .FirstOrDefault(discount =>
-                   discount.FromDate.Date <= DateTime.Today.Date && 
-                   discount.ToDate.Date >= DateTime.Today.Date)
-                   ?.DiscountPercentage ?? 0.0f;
     }
 
     private IQueryable<Room> FindAvailableRoomsWithCapacity(int adults, int children, DateTime checkInDate, DateTime checkOutDate)

@@ -10,6 +10,7 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("api/home")]
+[ApiVersion("1.0")]
 public class HomeController : Controller
 {
     private readonly IMediator _mediator;
@@ -38,6 +39,11 @@ public class HomeController : Controller
     /// Searches for hotels based on the provided search query.
     /// </summary>
     /// <param name="query">The hotel search query.</param>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     GET /api/hotels/search?checkInDate=2024-02-01&amp;checkOutDate=2024-02-03&amp;cityName=New%20York&amp;starRate=4&amp;adults=2&amp;children=1&amp;pageNumber=1&amp;pageSize=5
+    /// </remarks>
     /// <returns>A list of hotels matching the search criteria.</returns>
     [HttpGet("search")]
     [ProducesResponseType(StatusCodes.Status200OK)]

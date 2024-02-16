@@ -17,6 +17,7 @@ public interface IRoomRepository
     public Task<bool> CheckRoomBelongsToHotelAsync(Guid hotelId,
         Guid roomId);
     public Task<Room?> GetByIdAsync(Guid roomId);
+    public Task<float> GetPriceForRoomWithDiscount(Guid roomId);
     public Task<Room?> InsertAsync(Room room);
     public Task UpdateAsync(Room room);
     public Task DeleteAsync(Guid roomId);

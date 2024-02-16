@@ -41,7 +41,7 @@ public class Argon2PasswordGenerator : IPasswordGenerator
                 Threads = Environment.ProcessorCount,
                 Password = passwordBytes,
                 Salt = salt,
-                Secret = Encoding.UTF8.GetBytes(_configuration["PasswordGenerator:Secret"]), // from somewhere
+                Secret = Encoding.UTF8.GetBytes(_configuration["PasswordGenerator:Secret"]),
                 HashLength = int.Parse(_configuration["PasswordGenerator:HashLength"])
             };
 

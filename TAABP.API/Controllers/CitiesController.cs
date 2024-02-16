@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 using Application.Commands.CityCommands;
 using Application.DTOs.CityDtos;
-using Application.DTOs.ImageDtos;
 using Application.Queries.CityQueries;
 using AutoMapper;
 using Domain.Enums;
@@ -18,6 +17,7 @@ namespace TAABP.API.Controllers;
 
 [ApiController]
 [Route("api/cities")]
+[ApiVersion("1.0")]
 public class CitiesController : Controller
 {
     private readonly IMediator _mediator;
@@ -32,21 +32,24 @@ public class CitiesController : Controller
     }
     
     /// <summary>
-    /// Retrieves a list of cities with optional hotel details, supporting pagination.
+    /// Retrieves a paginated list of cities, optionally including hotel details,
+    /// based on the specified criteria.
     /// </summary>
-    /// <param name="includeHotels">Include hotel details in the response.</param>
-    /// <param name="pageSize">Number of items per page.</param>
-    /// <param name="pageNumber">Page number.</param>
-    /// <param name="searchQuery">Search query string.</param>
-    /// <returns>Returns a list of cities (with or without hotel details).</returns>
+    /// <param name="cityQuery">Query parameters for retrieving cities.</param>
+    /// <returns>Returns a paginated list of cities (with or without hotel details)
+    /// based on the query criteria.</returns>
+    /// <remarks>
+    /// This endpoint supports pagination and allows filtering cities based on the provided search criteria.
+    /// </remarks>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize(Policy = "MustBeAdmin")]
     public async Task<IActionResult> GetAllCitiesAsync(
-        [FromQuery] GetCitiesQuery cityQuery)
+    [FromQuery] GetCitiesQuery cityQuery)
     {
         var validator = new CitiesQueryValidator();
         var errors = await validator.CheckForValidationErrorsAsync(cityQuery);
@@ -71,9 +74,11 @@ public class CitiesController : Controller
     /// <returns>Returns the city details (with or without hotel details).</returns>
     [HttpGet("{cityId:guid}", Name = "GetCity")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)] 
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetCityAsync(Guid cityId, [FromQuery] bool includeHotels = false)
+    [Authorize]
+    public async Task<IActionResult> GetCityAsync(Guid cityId, bool includeHotels = false)
     {
         var request = new GetCityByIdQuery {Id = cityId, IncludeHotels = includeHotels};
         var result = await _mediator.Send(request);
@@ -87,9 +92,12 @@ public class CitiesController : Controller
     /// <param name="city">The data for creating a new city.</param>
     /// <returns>Returns the created city details.</returns>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize("MustBeAdmin")]
     public async Task<ActionResult<CityWithoutHotelsDto>> CreateCityAsync(CityForCreationDto city)
     {
         var validator = new CreateCityValidator();
@@ -116,7 +124,10 @@ public class CitiesController : Controller
     [HttpDelete("{cityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize("MustBeAdmin")]
     public async Task<ActionResult> DeleteCityAsync(Guid cityId)
     {
         var deleteCityCommand = new DeleteCityCommand {Id = cityId};
@@ -140,7 +151,10 @@ public class CitiesController : Controller
     [HttpPut("{cityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize("MustBeAdmin")]
     public async Task<ActionResult> UpdateCityAsync(Guid cityId, CityForUpdateDto cityForUpdateDto)
     {
         try
@@ -173,9 +187,13 @@ public class CitiesController : Controller
     [HttpPatch("{cityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> PartiallyUpdateCityAsync(Guid cityId, JsonPatchDocument<CityForUpdateDto> patchDocument)
+    [Authorize("MustBeAdmin")]
+    public async Task<ActionResult> PartiallyUpdateCityAsync(Guid cityId,
+    JsonPatchDocument<CityForUpdateDto> patchDocument)
     {
         try
         {
@@ -217,6 +235,7 @@ public class CitiesController : Controller
     /// </returns>
     [HttpGet("{cityId:guid}/photos")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
@@ -243,6 +262,8 @@ public class CitiesController : Controller
     [HttpPost("{cityId:guid}/gallery")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize("MustBeAdmin")]
@@ -253,7 +274,8 @@ public class CitiesController : Controller
             if (!await _mediator.Send(new CheckCityExistsQuery { Id = cityId })) 
                 return NotFound($"City with ID {cityId} does not exist");
 
-            var imageCreationDto = await ImageUploadHelper.CreateImageCreationDto(cityId, file, ImageType.Gallery);
+            var imageCreationDto = await ImageUploadHelper
+            .CreateImageCreationDto(cityId, file, ImageType.Gallery);
             await _imageService.UploadImageAsync(imageCreationDto);
             return Ok("Image uploaded successfully.");
         }
@@ -277,6 +299,8 @@ public class CitiesController : Controller
     [HttpPut("{cityId:guid}/thumbnail")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize("MustBeAdmin")]
@@ -287,9 +311,10 @@ public class CitiesController : Controller
             if (!await _mediator.Send(new CheckCityExistsQuery { Id = cityId })) 
                 return NotFound($"City with ID {cityId} does not exist");
 
-            var imageCreationDto = await ImageUploadHelper.CreateImageCreationDto(cityId, file, ImageType.Thumbnail);
+            var imageCreationDto = await ImageUploadHelper
+            .CreateImageCreationDto(cityId, file, ImageType.Thumbnail);
             await _imageService.UploadThumbnailAsync(imageCreationDto);
-            return Ok("Image uploaded successfully.");
+            return Ok("Thumbnail uploaded successfully.");
         }
         catch(NotSupportedException e)
         {
@@ -309,6 +334,8 @@ public class CitiesController : Controller
     /// </returns>
     [HttpDelete("{cityId:guid}/photos/{photoId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize(Policy = "MustBeAdmin")]
