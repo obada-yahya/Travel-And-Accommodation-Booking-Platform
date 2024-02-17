@@ -6,6 +6,8 @@ using Application.Queries.RoomQueries;
 using Application.Queries.UserQueries;
 using AutoMapper;
 using Domain.Exceptions;
+using Infrastructure.Email;
+using Infrastructure.Email.Models;
 using Infrastructure.Pdf;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -23,12 +25,17 @@ public class GuestsController : Controller
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
     private readonly IPdfService _pdfService;
+    private readonly IEmailService _emailService;
     
-    public GuestsController(IMediator mediator, IMapper mapper, IPdfService pdfService)
+    public GuestsController(IMediator mediator,
+        IMapper mapper,
+        IPdfService pdfService,
+        IEmailService emailService)
     {
         _mediator = mediator;
         _mapper = mapper;
         _pdfService = pdfService;
+        _emailService = emailService;
     }
 
     /// <summary>
@@ -174,30 +181,50 @@ public class GuestsController : Controller
         return Ok("Booking has been successfully submitted!");
     }
 
+    /// <summary>
+    /// Retrieves the invoice for a specific booking associated with an authenticated guest. 
+    /// </summary>
+    /// <param name="bookingId">The unique identifier of the booking.</param>
+    /// <param name="sendByEmail">Optional. Indicates whether to send the invoice by email. Default is false.</param>
+    /// <returns>
+    /// Returns the invoice file if sendByEmail is false, or a success message if the invoice is sent by email. 
+    /// Returns 401 Unauthorized if the authenticated user is not authorized to access the booking. 
+    /// Returns 404 Not Found if the booking associated with the provided ID does not exist. 
+    /// Returns 500 Internal Server Error if an unexpected error occurs during the process.
+    /// </returns>
     [HttpGet("bookings/{bookingId:guid}/invoice")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [Authorize]
-    public async Task<IActionResult> GetInvoiceForAuthenticatedGuest(Guid bookingId)
+    public async Task<IActionResult> GetInvoiceForAuthenticatedGuest(Guid bookingId,
+    [FromQuery] bool sendByEmail = false)
     {
         var identity = HttpContext.User.Identity as ClaimsIdentity; 
         var emailClaim = identity!.Claims.First(c => c.Type == "Email").Value;
         var nameClaim = identity.Claims.First(c => c.Type == "Name").Value;
-        
+    
         if (!await CheckBookingExistsAsync(bookingId))
             return NotFound($"Booking with ID {bookingId} doesn't exist");
-        
+    
         if (!await IsBookingAccessibleForGuestAsync(bookingId, emailClaim))
             return Unauthorized("The authenticated guest is not the same as the one who booked the room");
-        
+    
         try
         {
             var invoice = await _mediator.Send(new GetBookingInvoiceQuery{BookingId = bookingId});
             var pdfBytes = await _pdfService
                 .CreatePdfFromHtmlAsync(InvoiceUtils.GenerateInvoiceForUser(invoice, nameClaim));
-            return File(pdfBytes, "application/pdf", "invoice.pdf");
+
+            if (!sendByEmail) return File(pdfBytes, "application/pdf", "invoice.pdf");
+            var attachments = new List<FileAttachment>
+            {
+                new("invoice.pdf", pdfBytes, "application/pdf")
+            };
+            var message = InvoiceUtils.CreateInvoiceEmailMessage(bookingId, emailClaim, nameClaim, invoice);
+            await _emailService.SendEmailAsync(message, attachments);
+            return Ok("Invoice sent successfully");
         }
         catch (Exception ex)
         {

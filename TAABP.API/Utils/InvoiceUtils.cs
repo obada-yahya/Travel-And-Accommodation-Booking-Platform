@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Application.DTOs.BookingDtos;
+using Infrastructure.Email;
 
 namespace TAABP.API.Utils;
 
@@ -13,7 +14,8 @@ public static class InvoiceUtils
                         <html lang=""en"">
                         <head>
                             <meta charset=""UTF-8"">
-                            <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+                            <meta name=""viewport"" 
+                            content=""width=device-width, initial-scale=1.0"">
                             <title>Hotel Invoice</title>
                             <style>
                                 body {
@@ -44,11 +46,15 @@ public static class InvoiceUtils
                         <h1>Hotel Invoice</h1>
                     </div>
                     <div class=""invoice-details"">
-                        <p>Booking Number: <strong>#").Append(invoice.Id).Append(@"</strong></p>
-                        <p>Booking Date: <strong>").Append(invoice.BookingDate.ToString("yyyy/MM/dd"))
+                        <p>Booking Number: <strong>#")
+                        .Append(invoice.Id).Append(@"</strong></p>
+                        <p>Booking Date: <strong>")
+                        .Append(invoice.BookingDate.ToString("yyyy/MM/dd"))
                         .Append(@"</strong></p>
-                        <p>Hotel Name: <strong>").Append(invoice.HotelName).Append(@"</strong></p>
-                        <p>Guest Name: <strong>").Append(userName).Append(@"</strong></p>
+                        <p>Hotel Name: <strong>")
+                        .Append(invoice.HotelName).Append(@"</strong></p>
+                        <p>Guest Name: <strong>")
+                        .Append(userName).Append(@"</strong></p>
                     </div>
                     <table class=""invoice-table"">
                         <thead>
@@ -68,10 +74,11 @@ public static class InvoiceUtils
                             <td>${invoice.Price}</td>
                          </tr>");
 
-            sb.Append($@"      </tbody>
+            sb.Append($@"</tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan=""3"" style=""text-align: right;"">Total:</td>
+                                        <td colspan=""3"" 
+                                        style=""text-align: right;"">Total:</td>
                                         <td>${invoice.Price}</td>
                                     </tr>
                                 </tfoot>
@@ -80,5 +87,12 @@ public static class InvoiceUtils
                     </body>
                 </html>");
             return sb.ToString();
+    }
+
+    public static EmailMessage CreateInvoiceEmailMessage(Guid bookingId, string email, string name, InvoiceDto invoice)
+    {
+        return new EmailMessage(new List<string> { email }, "Your Invoice is Ready! 📄",
+            $"Dear {name},\n\nYour invoice for booking ID: {bookingId} is attached below." +
+            $"\n\nThank you for choosing {invoice.HotelName}!\n\nBest regards,\n{invoice.OwnerName}");
     }
 }

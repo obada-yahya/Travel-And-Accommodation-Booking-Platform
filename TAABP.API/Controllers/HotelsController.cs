@@ -32,7 +32,9 @@ public class HotelsController : Controller
     private readonly IImageService _imageService;
     private readonly IMapper _mapper;
 
-    public HotelsController(IMapper mapper, IMediator mediator, IImageService imageService)
+    public HotelsController(IMapper mapper,
+        IMediator mediator,
+        IImageService imageService)
     {
         _mapper = mapper;
         _mediator = mediator;
@@ -198,7 +200,8 @@ public class HotelsController : Controller
     }
     
     /// <summary>
-    /// Retrieves available rooms for a hotel based on its unique identifier (GUID) and optional filtering criteria.
+    /// Retrieves available rooms for a hotel based on its unique identifier
+    /// (GUID) and optional filtering criteria.
     /// </summary>
     /// <remarks>
     /// Sample request:
