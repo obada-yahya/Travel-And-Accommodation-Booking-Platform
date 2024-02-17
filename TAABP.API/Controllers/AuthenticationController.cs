@@ -19,10 +19,10 @@ public class AuthenticationController : Controller
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
 
-    public AuthenticationController(IConfiguration configuration,
-    ITokenGenerator tokenGenerator,
-    IMapper mapper,
-    IMediator mediator)
+    public AuthenticationController(IConfiguration configuration, 
+        ITokenGenerator tokenGenerator,
+        IMapper mapper,
+        IMediator mediator)
     {
         _configuration = configuration;
         _tokenGenerator = tokenGenerator;

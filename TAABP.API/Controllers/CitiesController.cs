@@ -24,7 +24,9 @@ public class CitiesController : Controller
     private readonly IMapper _mapper;
     private readonly IImageService _imageService;
     
-    public CitiesController(IMediator mediator, IMapper mapper, IImageService imageService)
+    public CitiesController(IMediator mediator,
+        IMapper mapper,
+        IImageService imageService)
     {
         _mediator = mediator;
         _mapper = mapper;

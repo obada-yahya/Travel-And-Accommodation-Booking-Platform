@@ -2,6 +2,8 @@
 using Infrastructure.Auth.AuthUser;
 using Infrastructure.Auth.Token;
 using Infrastructure.Common.Persistence.Repositories;
+using Infrastructure.Email;
+using Infrastructure.Email.Models;
 using Infrastructure.ImageStorage;
 using Infrastructure.Pdf;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
         services.AddScoped<IDiscountRepository, DiscountRepository>();
         services.AddScoped<IPdfService, PdfService>();
-        
+        services.AddScoped<IEmailService, EmailService>();
         return services;
     }
 }

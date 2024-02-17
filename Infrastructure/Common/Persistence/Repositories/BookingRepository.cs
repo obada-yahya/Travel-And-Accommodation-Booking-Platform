@@ -114,12 +114,14 @@ public class BookingRepository : IBookingRepository
             join room in _context.Rooms on booking.RoomId equals room.Id
             join roomType in _context.RoomTypes on room.RoomTypeId equals roomType.Id
             join hotel in _context.Hotels on roomType.HotelId equals hotel.Id
+            join owner in _context.Owners on hotel.OwnerId equals owner.Id
             select new Invoice
             {
                 Id = bookingId,
                 BookingDate = booking.BookingDate,
                 Price = booking.Price,
-                HotelName = hotel.Name
+                HotelName = hotel.Name,
+                OwnerName = owner.FirstName + " " + owner.LastName
             }).SingleAsync();
     }
 

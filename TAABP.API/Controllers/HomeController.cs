@@ -42,7 +42,9 @@ public class HomeController : Controller
     /// <remarks>
     /// Sample request:
     ///
-    ///     GET /api/hotels/search?checkInDate=2024-02-01&amp;checkOutDate=2024-02-03&amp;cityName=New%20York&amp;starRate=4&amp;adults=2&amp;children=1&amp;pageNumber=1&amp;pageSize=5
+    ///     GET /api/hotels/search?checkInDate=2024-02-01&amp;checkOutDate=2024-02-03&amp;
+    ///     cityName=New%20York&amp;starRate=4&amp;adults=2&amp;children=1&amp;pageNumber=1&amp;pageSize=5
+    /// 
     /// </remarks>
     /// <returns>A list of hotels matching the search criteria.</returns>
     [HttpGet("search")]
