@@ -230,7 +230,7 @@ Open the `appsettings.json` file located in your project directory and configure
 ```json
 {
   "ConnectionStrings": {
-    "TAABPCoreDb: "<connection_string>"
+    "TAABPCoreDb": "<connection_string>"
   }
 }
 ```
