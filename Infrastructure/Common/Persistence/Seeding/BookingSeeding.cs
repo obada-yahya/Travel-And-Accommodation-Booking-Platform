@@ -8,7 +8,7 @@ public class BookingSeeding
     {
         return new List<Booking>
         {
-            new Booking
+            new()
             {
                 Id = new Guid("7d3155a2-95f8-4d9b-bc24-662ae053f1c9"),
                 RoomId = new Guid("a98b8a9d-4c5a-4a90-a2d2-5f1441b93db6"),
@@ -18,7 +18,7 @@ public class BookingSeeding
                 CheckOutDate = DateTime.Parse("2023-01-20"),
                 BookingDate = DateTime.Parse("2023-01-10")
             },
-            new Booking
+            new()
             {
                 Id = new Guid("efeb3d13-3dab-46c9-aa9a-9f22dd58e06e"),
                 RoomId = new Guid("4e1cb3d9-bc3b-4997-a3d5-0c56cf17fe7a"),
@@ -28,7 +28,7 @@ public class BookingSeeding
                 CheckOutDate = DateTime.Parse("2023-02-10"),
                 BookingDate = DateTime.Parse("2023-01-28")
             },
-            new Booking
+            new()
             {
                 Id = new Guid("0bf4a177-98b8-4f67-8a56-95669c320890"),
                 RoomId = new Guid("c6898b7e-ee09-4b36-8b20-22e8c2a63e29"),

@@ -8,7 +8,7 @@ public class OwnerSeeding
     {
         return new List<Owner>
         {
-            new Owner
+            new()
             {
                 Id = new Guid("a1d1aa11-12e7-4e0f-8425-67c1c1e62c2d"),
                 FirstName = "Obada",
@@ -16,7 +16,7 @@ public class OwnerSeeding
                 Email = "obadayahya.an@gmail.com",
                 PhoneNumber = "0598231234",
             },
-            new Owner
+            new()
             {
                 Id = new Guid("77b2c30b-65d0-4ea7-8a5e-71e7c294f117"),
                 FirstName = "Muathe",

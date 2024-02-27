@@ -1,5 +1,5 @@
-﻿using System.Reflection;
-using Domain.Entities;
+﻿using Domain.Entities;
+using Infrastructure.Common.Persistence.Configurations;
 using Infrastructure.Common.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,8 +27,19 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        modelBuilder.ApplyConfiguration(new BookingConfiguration());
+        modelBuilder.ApplyConfiguration(new CityConfiguration());
+        modelBuilder.ApplyConfiguration(new HotelConfiguration());
+        modelBuilder.ApplyConfiguration(new ImageConfiguration());
+        modelBuilder.ApplyConfiguration(new OwnerConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+        modelBuilder.ApplyConfiguration(new ReviewConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        
         modelBuilder.SeedTables();
         base.OnModelCreating(modelBuilder);
     }
+    
 }
